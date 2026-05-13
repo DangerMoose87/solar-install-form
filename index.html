@@ -347,7 +347,20 @@ function buildCircuitBlock(id){
       const val=lbl.querySelector('input').value;
       const showRcd=val==='RCBO'||val==='RCD';
       const rcdSec=block.querySelector('.rcd-section');
-      if(rcdSec){rcdSec.style.display=showRcd?'block':'none';}
+      const rcdDisc=block.querySelector('.rcd-disconnect-field');
+      if(rcdSec){
+        rcdSec.style.display=showRcd?'block':'none';
+        if(!showRcd){
+          // Clear all RCD fields when hiding
+          rcdSec.querySelectorAll('.ri.sel').forEach(r=>r.classList.remove('sel'));
+          rcdSec.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+          rcdSec.querySelectorAll('.other-wrap').forEach(o=>{o.classList.remove('show');if(o.querySelector('input'))o.querySelector('input').value='';});
+        }
+      }
+      if(rcdDisc){
+        rcdDisc.style.display=showRcd?'flex':'none';
+        if(!showRcd){const i=rcdDisc.querySelector('input');if(i)i.value='';}
+      }
     };
   });
   g3.appendChild(opdField);
@@ -361,21 +374,9 @@ function buildCircuitBlock(id){
   const dv3=document.createElement('div');dv3.className='dv';rcdSection.appendChild(dv3);
   const sh3=document.createElement('div');sh3.className='sub';sh3.textContent='RCD';rcdSection.appendChild(sh3);
   const g4=document.createElement('div');g4.className='fg fg2';g4.style.marginBottom='10px';
-  const rcdTypeField=makeRbField('RCD type',n+'_rcdType',['A','AC','S','Other'],block,true);
-  g4.appendChild(rcdTypeField);
+  g4.appendChild(makeRbField('RCD type',n+'_rcdType',['A','AC','S','Other'],block,true));
   g4.appendChild(makeRbField('Operating current',n+'_rcdCurrent',['10mA','30mA','100mA','Other'],block,true));
   g4.appendChild(makeRbField('Rating (A)',n+'_rcdRating',['6','16','20','32','40','63','80'],block,false));
-  // Disconnect time — only show when RCD type selected
-  const disconnectField=makeInpField('Disconnect time (ms)','number','0.1');
-  disconnectField.style.display='none';
-  disconnectField.id='disconnectWrap-'+id;
-  g4.appendChild(disconnectField);
-  // Hook RCD type to show disconnect time
-  const rcdRg=rcdTypeField.querySelector('.rg');
-  rcdRg.querySelectorAll('.ri').forEach(lbl=>{
-    const orig=lbl.onclick;
-    lbl.onclick=function(e){if(orig)orig.call(this,e);disconnectField.style.display='flex';};
-  });
   rcdSection.appendChild(g4);
   block.appendChild(rcdSection);
 
@@ -385,7 +386,11 @@ function buildCircuitBlock(id){
   const g5=document.createElement('div');g5.className='fg fg3';
   g5.appendChild(makeInpField('R1+R2 (Ω)','number','0.001'));
   g5.appendChild(makeInpField('Zs (Ω)','number','0.001'));
-  g5.appendChild(makeInpField('RCD disconnect time (ms)','number','0.1'));
+  // RCD disconnect time — hidden unless RCD section visible
+  const rcdDisconnectField=makeInpField('RCD disconnect time (ms)','number','0.1');
+  rcdDisconnectField.classList.add('rcd-disconnect-field');
+  rcdDisconnectField.style.display='none';
+  g5.appendChild(rcdDisconnectField);
   block.appendChild(g5);
   return block;
 }
@@ -503,12 +508,20 @@ async function submitForm(){
   // S4
   document.querySelectorAll('#circuitBlocks .dyn-block').forEach((b,i)=>{
     const num=i+1;const n='c'+num;
-    [['_circType','Circuit type'],[' _wiringType','Wiring type'],['_live','Live conductor'],['_cpc','CPC conductor'],['_opdType','Device type'],['_opdChar','Characteristic'],['_opdRating','OPD rating'],['_breakCap','Breaking capacity']].forEach(([k,l])=>{
+    [['_circType','Circuit type'],['_wiringType','Wiring type'],['_live','Live conductor'],['_cpc','CPC conductor'],['_opdType','Device type'],['_opdChar','Characteristic'],['_opdRating','OPD rating'],['_breakCap','Breaking capacity']].forEach(([k,l])=>{
       const el=b.querySelector('input[name="'+n+k.trim()+'"]:checked');
       if(!el){const rg=b.querySelector('#rg-'+n+k.trim());const w=rg?rg.closest('.f'):null;markInv(w,'Circuit '+num+': '+l+' required');errors.push('Circuit '+num+': '+l);}
     });
-    const nums=Array.from(b.querySelectorAll('input[type=number]:not([style*="none"])')).filter(e=>!e.closest('.other-wrap'));
-    if(!nums[0]||!nums[0].value.trim()){const w=nums[0]?nums[0].closest('.f'):null;markInv(w,'Circuit '+num+': Points served required');errors.push('Circuit '+num+': Points served');}
+    // Points served
+    const ptsInp=Array.from(b.querySelectorAll('input[type=number]')).filter(e=>!e.closest('.other-wrap')&&!e.closest('.rcd-section')&&!e.closest('.rcd-disconnect-field'))[0];
+    if(!ptsInp||!ptsInp.value.trim()){const w=ptsInp?ptsInp.closest('.f'):null;markInv(w,'Circuit '+num+': Points served required');errors.push('Circuit '+num+': Points served');}
+    // RCD disconnect time only if RCD section visible
+    const rcdSec=b.querySelector('.rcd-section');
+    const rcdDisc=b.querySelector('.rcd-disconnect-field');
+    if(rcdDisc&&rcdSec&&rcdSec.style.display!=='none'){
+      const rcdDiscInp=rcdDisc.querySelector('input');
+      if(!rcdDiscInp||!rcdDiscInp.value.trim()){markInv(rcdDisc,'Circuit '+num+': RCD disconnect time required');errors.push('Circuit '+num+': RCD disconnect time');}
+    }
   });
 
   // S5

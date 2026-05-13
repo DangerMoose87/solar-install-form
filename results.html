@@ -201,8 +201,14 @@ let currentSort='date-desc';
 async function loadJobs(){
   document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="loading"><i class="ti ti-loader" aria-hidden="true"></i> Loading jobs…</td></tr>';
   try{
-    const res=await fetch(SCRIPT_URL+'?action=list');
-    const data=await res.json();
+    const res=await fetch(SCRIPT_URL+'?action=list',{redirect:'follow'});
+    const text=await res.text();
+    let data;
+    try{data=JSON.parse(text);}catch(e){
+      const match=text.match(/\{.*\}/s);
+      if(match)data=JSON.parse(match[0]);
+      else throw new Error('Invalid response');
+    }
     if(data.result==='success'){
       allJobs=data.jobs||[];
       updateStats();
@@ -211,7 +217,7 @@ async function loadJobs(){
       document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty-row">No jobs found</td></tr>';
     }
   }catch(e){
-    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty-row">Could not load jobs — check connection</td></tr>';
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty-row">Could not load jobs — ensure Apps Script is deployed with access set to Anyone</td></tr>';
   }
 }
 
