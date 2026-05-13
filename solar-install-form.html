@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solar Install Test Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --surface: #ffffff;
+    --surface2: #f9f8f5;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text-muted: #6b6b66;
+    --text-faint: #a0a09a;
+    --accent: #2a6b3c;
+    --accent-bg: #e8f5ed;
+    --accent-border: #a8d4b5;
+    --accent-text: #1d5230;
+    --warn: #7a4f00;
+    --warn-bg: #fef3e0;
+    --warn-border: #f0c97a;
+    --info-bg: #eef4ff;
+    --info-border: #b3ccf5;
+    --info-text: #1d3f7a;
+    --danger: #8b1f1f;
+    --danger-bg: #fdeaea;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+
+  .logo {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px; flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 16px; font-weight: 600; color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  header p {
+    font-size: 12px; color: var(--text-muted); margin-top: 1px;
+  }
+
+  .progress-strip {
+    height: 3px;
+    background: var(--border);
+    position: sticky;
+    top: 73px;
+    z-index: 99;
+  }
+  .progress-strip-bar {
+    height: 3px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600;
+    color: var(--accent-text);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 15px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+
+  .section-icon { font-size: 18px; color: var(--text-muted); }
+
+  .fg { display: grid; gap: 14px; }
+  .fg2 { grid-template-columns: 1fr 1fr; }
+  .fg3 { grid-template-columns: 1fr 1fr 1fr; }
+  .full { grid-column: 1 / -1; }
+
+  .f { display: flex; flex-direction: column; gap: 5px; }
+  .f label {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-muted); letter-spacing: 0.01em;
+  }
+
+  .f input, .f select {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 8px 11px;
+    font-size: 14px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+  }
+
+  .f input:focus, .f select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(42,107,60,0.12);
+    background: var(--surface);
+  }
+
+  .rg { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 3px; }
+
+  .ri {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text);
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 11px;
+    background: var(--surface2);
+    user-select: none;
+    transition: all 0.12s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ri:hover { border-color: var(--accent); background: var(--accent-bg); }
+  .ri input { display: none; }
+  .ri.sel {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+
+  .cg { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 3px; }
+  .ci {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text);
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 6px 11px;
+    background: var(--surface2);
+    user-select: none;
+    transition: all 0.12s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ci input { display: none; }
+  .ci.chk {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 1.1rem 0; }
+
+  .sub-head {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 10px; margin-top: 2px;
+  }
+
+  .dyn-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .dyn-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .rm-btn {
+    margin-left: auto;
+    font-size: 12px; color: var(--text-faint);
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    transition: all 0.12s;
+  }
+  .rm-btn:hover { color: var(--danger); background: var(--danger-bg); }
+
+  .hint {
+    font-size: 12px; color: var(--text-faint);
+    display: flex; align-items: center; gap: 5px;
+    margin-top: -6px;
+  }
+
+  .conditional-field {
+    overflow: hidden;
+    max-height: 0; opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.2s ease, margin 0.28s ease;
+    margin-top: 0;
+  }
+  .conditional-field.visible { max-height: 90px; opacity: 1; margin-top: 0; }
+
+  .emlite-wrap {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .emlite-wrap label { font-size: 12px; font-weight: 500; color: var(--warn); }
+  .emlite-wrap input {
+    border: 1px solid var(--warn-border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px; font-size: 14px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif; width: 100%;
+  }
+  .emlite-wrap input:focus { outline: none; border-color: var(--warn); }
+
+  .checklist-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    cursor: pointer; user-select: none;
+    transition: all 0.15s;
+    background: var(--surface2);
+  }
+  .checklist-item:last-child { margin-bottom: 0; }
+  .checklist-item:hover { border-color: var(--accent); background: var(--accent-bg); }
+  .checklist-item.done {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+  }
+  .check-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .checklist-item.done .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .check-box i { font-size: 13px; color: white; opacity: 0; transition: opacity 0.15s; }
+  .checklist-item.done .check-box i { opacity: 1; }
+  .checklist-item input[type="checkbox"] { display: none; }
+  .check-label { font-size: 14px; color: var(--text); line-height: 1.4; }
+  .checklist-item.done .check-label { color: var(--accent-text); font-weight: 500; }
+
+  .progress-wrap {
+    margin-bottom: 1.1rem;
+  }
+  .progress-meta {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .progress-track {
+    height: 6px; background: var(--border);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 6px; background: var(--accent);
+    border-radius: 99px; width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  .submit-row {
+    display: flex; gap: 10px; margin-top: 1.5rem;
+  }
+
+  .btn-primary {
+    flex: 1;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px 20px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.15s, transform 0.12s;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 13px 18px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 7px;
+    transition: all 0.12s;
+  }
+  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: white;
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 500;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s, bottom 0.3s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; bottom: 28px; }
+  .toast.success { background: var(--accent); }
+  .toast.error { background: var(--danger); }
+
+  .empty-state {
+    font-size: 13px; color: var(--text-faint);
+    padding: 0.5rem 0; font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 1rem; }
+    .fg2, .fg3 { grid-template-columns: 1fr; }
+    header { padding: 1rem 1.25rem; }
+    .section-card { padding: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
+  <div>
+    <h1>Solar Install Test Results</h1>
+    <p>Complete all sections before submitting</p>
+  </div>
+</header>
+
+<div class="progress-strip">
+  <div class="progress-strip-bar" id="formProgress"></div>
+</div>
+
+<div class="container">
+
+  <!-- Section 1 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">1</span>
+      <i class="ti ti-user section-icon" aria-hidden="true"></i>
+      <span class="section-title">Customer details</span>
+    </div>
+    <div class="fg fg2">
+      <div class="f"><label>Customer name</label><input type="text" id="custName" placeholder="Full name or company"/></div>
+      <div class="f"><label>Date</label><input type="date" id="custDate"/></div>
+      <div class="f full"><label>Address</label><input type="text" id="custAddress" placeholder="Street address"/></div>
+      <div class="f"><label>Post code</label><input type="text" id="custPostcode" placeholder="e.g. EX8 1AB"/></div>
+      <div class="f"><label>Installer name</label><input type="text" id="installerName" placeholder="Full name"/></div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">2</span>
+      <i class="ti ti-bolt section-icon" aria-hidden="true"></i>
+      <span class="section-title">Supply characteristics</span>
+    </div>
+    <div class="fg fg2">
+      <div class="f"><label>Supply type</label><div class="rg" id="supplyType"><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-C"/>TN-C</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-S"/>TN-S</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-C-S"/>TN-C-S</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TT"/>TT</label></div></div>
+      <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="fuseRating"><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Ze (Ω)</label><input type="number" step="0.001" id="ze" placeholder="0.000"/></div>
+      <div class="f"><label>PFC (kA)</label><input type="number" step="0.01" id="pfc" placeholder="0.00"/></div>
+      <div class="f"><label>Main switch location</label><input type="text" id="switchLoc" placeholder="e.g. Meter cupboard"/></div>
+      <div class="f"><label>Switch type</label><div class="rg" id="switchType"><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Main Switch"/>Main switch</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="RCD"/>RCD</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Switch rating</label><div class="rg" id="switchRating"><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Number of poles</label><input type="number" id="numPoles" placeholder="e.g. 1"/></div>
+      <div class="f"><label>Supply conductor size</label><div class="rg" id="supplyCond"><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Earth conductor size</label><div class="rg" id="earthCond"><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Earth continuity verified</label><div class="rg" id="earthCont"><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="N/A"/>N/A</label></div></div>
+      <div class="f"><label>Bonding</label><div class="cg"><label class="ci" onclick="cb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">3</span>
+      <i class="ti ti-server section-icon" aria-hidden="true"></i>
+      <span class="section-title">DB / gateway details</span>
+    </div>
+    <div class="fg fg2">
+      <div class="f">
+        <label>Type</label>
+        <div class="rg" id="dbType">
+          <label class="ri" onclick="rb(this,'dbType');toggleEmlite('DB')"><input type="radio" name="dbType" value="DB"/>DB</label>
+          <label class="ri" onclick="rb(this,'dbType');toggleEmlite('Gateway')"><input type="radio" name="dbType" value="Gateway"/>Gateway</label>
+        </div>
+      </div>
+      <div class="f"><label>Location</label><input type="text" id="dbLocation" placeholder="e.g. Utility room"/></div>
+      <div class="full">
+        <div class="conditional-field" id="emliteField">
+          <div class="emlite-wrap">
+            <label><i class="ti ti-gauge" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>EMLite export meter serial number</label>
+            <input type="text" id="emliteSerial" placeholder="Enter serial number"/>
+          </div>
+        </div>
+      </div>
+      <div class="f"><label>Number of ways</label><input type="number" id="dbWays" placeholder="e.g. 12"/></div>
+      <div class="f"><label>SPD status</label><div class="rg" id="spdStatus"><label class="ri" onclick="rb(this,'spdStatus')"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'spdStatus')"><input type="radio" name="spdStatus" value="N/A"/>N/A</label></div></div>
+      <div class="f"><label>SPD type</label><div class="rg" id="spdType"><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T1"/>T1</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T2"/>T2</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T3"/>T3</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="N/A"/>N/A</label></div></div>
+      <div class="f"><label>Correct polarity</label><div class="rg" id="dbPolarity"><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="No"/>No</label></div></div>
+      <div class="f"><label>Directly connected to origin</label><div class="rg" id="dbOrigin"><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="No"/>No</label></div></div>
+      <div class="f"><label>How many circuits?</label><input type="number" id="dbCircuits" min="1" max="20" placeholder="e.g. 4" oninput="updateCircuits(this.value)"/></div>
+      <p class="hint full"><i class="ti ti-info-circle" style="font-size:13px" aria-hidden="true"></i> Section 4 populates automatically from this number</p>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">4</span>
+      <i class="ti ti-circuit-cell section-icon" aria-hidden="true"></i>
+      <span class="section-title">Circuit details</span>
+    </div>
+    <div id="circuitBlocks"><p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p></div>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">5</span>
+      <i class="ti ti-solar-panel section-icon" aria-hidden="true"></i>
+      <span class="section-title">PV details</span>
+    </div>
+    <div class="fg fg2" style="margin-bottom:1rem;">
+      <div class="f"><label>Number of strings</label><input type="number" id="numStrings" min="1" max="20" placeholder="e.g. 2" oninput="updateStrings(this.value)"/></div>
+    </div>
+    <div id="stringBlocks"></div>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-num">6</span>
+      <i class="ti ti-clipboard-check section-icon" aria-hidden="true"></i>
+      <span class="section-title">Install checklist</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progressText">0 of 4 completed</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
+    </div>
+    <div id="checklistItems">
+      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Grid setting set to G99 during commissioning</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Electricity rates and currency set during commissioning</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Warning stickers applied</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Customer given quick walkthrough of app</span></div>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <button class="btn-secondary" onclick="clearForm()"><i class="ti ti-refresh" aria-hidden="true"></i> Clear</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitForm()"><i class="ti ti-send" aria-hidden="true"></i> Submit to Google Sheets</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
+
+const HEADERS = [
+  'Date','Customer Name','Address','Post Code','Installer Name',
+  'Supply Type','Fuse Rating','Ze (Ω)','PFC (kA)','Main Switch Location',
+  'Switch Type','Switch Rating','Num Poles','Supply Conductor','Earth Conductor',
+  'Earth Continuity','Bonding',
+  'DB/Gateway Type','DB Location','EMLite Serial','Num Ways',
+  'SPD Status','SPD Type','Correct Polarity','Connected to Origin','Num Circuits',
+  'Circuit Data',
+  'Num Strings','String Data',
+  'Checklist: G99 Set','Checklist: Rates Set','Checklist: Stickers','Checklist: Walkthrough'
+];
+
+document.getElementById('custDate').value = new Date().toISOString().split('T')[0];
+
+function rb(el, gid) {
+  document.querySelectorAll('#' + gid + ' .ri').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  el.querySelector('input').checked = true;
+  updateFormProgress();
+}
+
+function rbLocal(el, gid, scope) {
+  scope.querySelectorAll('#' + gid + ' .ri').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  el.querySelector('input').checked = true;
+}
+
+function cb(el) {
+  el.classList.toggle('chk');
+  el.querySelector('input').checked = el.classList.contains('chk');
+}
+
+function toggleEmlite(val) {
+  const field = document.getElementById('emliteField');
+  if (val === 'DB') {
+    field.classList.add('visible');
+  } else {
+    field.classList.remove('visible');
+    document.getElementById('emliteSerial').value = '';
+  }
+}
+
+function toggleCheck(item) {
+  item.classList.toggle('done');
+  item.querySelector('input[type="checkbox"]').checked = item.classList.contains('done');
+  updateProgress();
+  updateFormProgress();
+}
+
+function updateProgress() {
+  const items = document.querySelectorAll('#checklistItems .checklist-item');
+  const done = document.querySelectorAll('#checklistItems .checklist-item.done').length;
+  const total = items.length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressText').textContent = done + ' of ' + total + ' completed';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function updateFormProgress() {
+  const filled = document.querySelectorAll('.ri.sel, .ci.chk, input[type="date"]:not([value=""]), .checklist-item.done').length;
+  const pct = Math.min(100, Math.round((filled / 30) * 100));
+  document.getElementById('formProgress').style.width = pct + '%';
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function getRbVal(name) {
+  const el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : '';
+}
+
+function getCbVals(groupId) {
+  return Array.from(document.querySelectorAll('#' + groupId + ' .ci.chk input')).map(i => i.value).join(', ');
+}
+
+function makeRG(name, options, scope) {
+  const d = document.createElement('div');
+  d.className = 'rg'; d.id = name;
+  options.forEach(opt => {
+    const lbl = document.createElement('label');
+    lbl.className = 'ri';
+    lbl.innerHTML = '<input type="radio" name="' + name + '" value="' + opt + '"/>' + opt;
+    lbl.onclick = function () { rbLocal(lbl, name, scope); };
+    d.appendChild(lbl);
+  });
+  return d;
+}
+
+function field(labelText, content) {
+  const d = document.createElement('div'); d.className = 'f';
+  const lbl = document.createElement('label'); lbl.textContent = labelText;
+  d.appendChild(lbl); d.appendChild(content); return d;
+}
+
+function inp(placeholder, type, step) {
+  const i = document.createElement('input');
+  i.type = type || 'text'; i.placeholder = placeholder;
+  if (step) i.step = step; return i;
+}
+
+function rgField(labelText, name, options, scope) {
+  const d = document.createElement('div'); d.className = 'f';
+  const lbl = document.createElement('label'); lbl.textContent = labelText;
+  d.appendChild(lbl); d.appendChild(makeRG(name, options, scope)); return d;
+}
+
+let circuitCount = 0;
+
+function buildCircuitBlock(id) {
+  const n = 'c' + id;
+  const block = document.createElement('div');
+  block.className = 'dyn-block'; block.id = 'circ-' + id;
+
+  const title = document.createElement('div'); title.className = 'dyn-title';
+  title.innerHTML = '<i class="ti ti-circuit-cell" aria-hidden="true"></i> Circuit ' + id;
+  const rm = document.createElement('button'); rm.className = 'rm-btn';
+  rm.innerHTML = '<i class="ti ti-x" aria-hidden="true"></i> Remove';
+  rm.onclick = () => block.remove();
+  title.appendChild(rm); block.appendChild(title);
+
+  const g1 = document.createElement('div'); g1.className = 'fg fg3'; g1.style.marginBottom = '10px';
+  g1.appendChild(rgField('Circuit type', n + '_circType', ['Inverter', 'EV Charger', 'Other'], block));
+  g1.appendChild(rgField('Type of wiring', n + '_wiringType', ['PVC', 'SWA', 'H07', 'Other'], block));
+  const pts = inp('e.g. 1', 'number'); pts.min = '1';
+  g1.appendChild(field('Number of points served', pts));
+  block.appendChild(g1);
+
+  const dv1 = document.createElement('div'); dv1.className = 'divider'; block.appendChild(dv1);
+  const sh1 = document.createElement('div'); sh1.className = 'sub-head'; sh1.textContent = 'Conductor size'; block.appendChild(sh1);
+  const g2 = document.createElement('div'); g2.className = 'fg fg2'; g2.style.marginBottom = '10px';
+  g2.appendChild(field('Live (mm²)', inp('e.g. 6')));
+  g2.appendChild(field('CPC (mm²)', inp('e.g. 6')));
+  block.appendChild(g2);
+
+  const dv2 = document.createElement('div'); dv2.className = 'divider'; block.appendChild(dv2);
+  const sh2 = document.createElement('div'); sh2.className = 'sub-head'; sh2.textContent = 'Overcurrent protective device'; block.appendChild(sh2);
+  const g3 = document.createElement('div'); g3.className = 'fg fg2'; g3.style.marginBottom = '10px';
+  g3.appendChild(rgField('Device type', n + '_opdType', ['MCB', 'RCBO', 'RCD', 'Other'], block));
+  g3.appendChild(rgField('Characteristic', n + '_opdChar', ['B', 'C', 'Other'], block));
+  g3.appendChild(rgField('Rating (A)', n + '_opdRating', ['6', '16', '20', '32', '40', '63', 'Other'], block));
+  g3.appendChild(rgField('Breaking capacity', n + '_breakCap', ['6kA', '10kA'], block));
+  block.appendChild(g3);
+
+  const dv3 = document.createElement('div'); dv3.className = 'divider'; block.appendChild(dv3);
+  const sh3 = document.createElement('div'); sh3.className = 'sub-head'; sh3.textContent = 'RCD'; block.appendChild(sh3);
+  const g4 = document.createElement('div'); g4.className = 'fg fg2'; g4.style.marginBottom = '10px';
+  g4.appendChild(rgField('RCD type', n + '_rcdType', ['A', 'AC', 'S', 'Other'], block));
+  g4.appendChild(rgField('Operating current', n + '_rcdCurrent', ['10mA', '30mA', '100mA', 'Other'], block));
+  g4.appendChild(rgField('Rating (A)', n + '_rcdRating', ['6', '16', '20', '32', '40', '63', '80'], block));
+  g4.appendChild(field('Disconnect time (ms)', inp('e.g. 18', 'number', '0.1')));
+  block.appendChild(g4);
+
+  const dv4 = document.createElement('div'); dv4.className = 'divider'; block.appendChild(dv4);
+  const sh4 = document.createElement('div'); sh4.className = 'sub-head'; sh4.textContent = 'Test results'; block.appendChild(sh4);
+  const g5 = document.createElement('div'); g5.className = 'fg fg3';
+  g5.appendChild(field('R1+R2 (Ω)', inp('0.000', 'number', '0.001')));
+  g5.appendChild(field('Zs (Ω)', inp('0.000', 'number', '0.001')));
+  g5.appendChild(field('RCD disconnect time (ms)', inp('e.g. 18', 'number', '0.1')));
+  block.appendChild(g5);
+  return block;
+}
+
+function updateCircuits(val) {
+  const n = Math.max(0, Math.min(20, parseInt(val) || 0));
+  const container = document.getElementById('circuitBlocks');
+  if (n === 0) {
+    container.innerHTML = '<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
+    circuitCount = 0; return;
+  }
+  if (circuitCount === 0 && n > 0) container.innerHTML = '';
+  while (circuitCount < n) { circuitCount++; container.appendChild(buildCircuitBlock(circuitCount)); }
+  while (circuitCount > n) { const el = document.getElementById('circ-' + circuitCount); if (el) el.remove(); circuitCount--; }
+}
+
+let stringCount = 0;
+
+function updateStrings(val) {
+  const n = Math.max(0, Math.min(20, parseInt(val) || 0));
+  const container = document.getElementById('stringBlocks');
+  while (stringCount < n) {
+    stringCount++;
+    const sid = stringCount;
+    const div = document.createElement('div'); div.className = 'dyn-block'; div.id = 'str-' + sid;
+    div.innerHTML = '<div class="dyn-title"><i class="ti ti-sun" aria-hidden="true"></i> String ' + sid + '<button class="rm-btn" onclick="this.closest(\'.dyn-block\').remove()"><i class="ti ti-x" aria-hidden="true"></i> Remove</button></div>'
+      + '<div class="fg fg2">'
+      + '<div class="f"><label>Voc STC (V)</label><input type="number" step="0.1" placeholder="e.g. 42.5"/></div>'
+      + '<div class="f"><label>DC cable size</label><div class="rg" id="dcCable-' + sid + '"><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="4mm"/>4mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="6mm"/>6mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="Other"/>Other</label></div></div>'
+      + '<div class="f"><label>Polarity check</label><div class="rg" id="polarity-' + sid + '"><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="No"/>No</label></div></div>'
+      + '<div class="f"><label>Isolator location</label><input type="text" placeholder="e.g. Roof-mounted, adjacent to panels"/></div>'
+      + '</div>';
+    container.appendChild(div);
+  }
+  while (stringCount > n) { const el = document.getElementById('str-' + stringCount); if (el) el.remove(); stringCount--; }
+}
+
+function collectCircuitData() {
+  const blocks = document.querySelectorAll('#circuitBlocks .dyn-block');
+  return Array.from(blocks).map((b, i) => {
+    const inputs = b.querySelectorAll('input[type="text"], input[type="number"]');
+    const radios = b.querySelectorAll('input[type="radio"]:checked');
+    const radioVals = Array.from(radios).map(r => r.name.split('_').slice(1).join('_') + ':' + r.value).join('; ');
+    const inputVals = Array.from(inputs).map(inp => inp.value).filter(Boolean).join(', ');
+    return 'Circuit ' + (i + 1) + ' [' + radioVals + (inputVals ? ' | ' + inputVals : '') + ']';
+  }).join(' || ');
+}
+
+function collectStringData() {
+  const blocks = document.querySelectorAll('#stringBlocks .dyn-block');
+  return Array.from(blocks).map((b, i) => {
+    const voc = b.querySelector('input[type="number"]');
+    const cable = b.querySelector('input[type="radio"][name^="dcCable"]:checked');
+    const polarity = b.querySelector('input[type="radio"][name^="polarity"]:checked');
+    const isoLoc = b.querySelector('input[type="text"]');
+    return 'String ' + (i + 1) + ' [Voc:' + (voc ? voc.value : '') + ', Cable:' + (cable ? cable.value : '') + ', Polarity:' + (polarity ? polarity.value : '') + ', Isolator:' + (isoLoc ? isoLoc.value : '') + ']';
+  }).join(' || ');
+}
+
+function getChecklistVal(index) {
+  const items = document.querySelectorAll('#checklistItems .checklist-item');
+  return items[index] && items[index].classList.contains('done') ? 'Yes' : 'No';
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  setTimeout(() => { t.className = 'toast'; }, 4000);
+}
+
+async function submitForm() {
+  const name = getVal('custName');
+  const installer = getVal('installerName');
+  const unchecked = document.querySelectorAll('#checklistItems .checklist-item:not(.done)').length;
+
+  if (!name || !installer) { showToast('Please fill in customer name and installer name', 'error'); return; }
+  if (unchecked > 0) { showToast(unchecked + ' checklist item' + (unchecked > 1 ? 's' : '') + ' not yet completed', 'error'); return; }
+
+  const values = [
+    getVal('custDate'), name, getVal('custAddress'), getVal('custPostcode'), installer,
+    getRbVal('supplyType'), getRbVal('fuseRating'), getVal('ze'), getVal('pfc'), getVal('switchLoc'),
+    getRbVal('switchType'), getRbVal('switchRating'), getVal('numPoles'), getRbVal('supplyCond'), getRbVal('earthCond'),
+    getRbVal('earthCont'), getCbVals('bondingGroup') || document.querySelectorAll('.cg .ci.chk input') ? Array.from(document.querySelectorAll('.cg .ci.chk input')).map(i=>i.value).join(', ') : '',
+    getRbVal('dbType'), getVal('dbLocation'), getVal('emliteSerial'), getVal('dbWays'),
+    getRbVal('spdStatus'), getRbVal('spdType'), getRbVal('dbPolarity'), getRbVal('dbOrigin'), getVal('dbCircuits'),
+    collectCircuitData(),
+    getVal('numStrings'), collectStringData(),
+    getChecklistVal(0), getChecklistVal(1), getChecklistVal(2), getChecklistVal(3)
+  ];
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Submitting...';
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ headers: HEADERS, values: values })
+    });
+    showToast('Submitted successfully!', 'success');
+    setTimeout(() => clearForm(), 1500);
+  } catch (err) {
+    showToast('Submission failed — check your connection', 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i> Submit to Google Sheets';
+}
+
+function clearForm() {
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
+  document.getElementById('custDate').value = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.ri').forEach(el => el.classList.remove('sel'));
+  document.querySelectorAll('.ci').forEach(el => el.classList.remove('chk'));
+  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+  document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('done'));
+  document.getElementById('emliteField').classList.remove('visible');
+  document.getElementById('circuitBlocks').innerHTML = '<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
+  circuitCount = 0;
+  document.getElementById('stringBlocks').innerHTML = '';
+  stringCount = 0;
+  updateProgress();
+  updateFormProgress();
+}
+
+updateProgress();
+updateFormProgress();
+</script>
+</body>
+</html>
