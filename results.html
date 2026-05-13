@@ -277,9 +277,18 @@ function renderTable(){
   let jobs=[...allJobs];
   if(q){jobs=jobs.filter(j=>(j.jobNumber||'').toLowerCase().includes(q)||(j.customer||'').toLowerCase().includes(q)||(j.address||'').toLowerCase().includes(q));}
   jobs.sort((a,b)=>{
-    if(sort==='date-desc')return new Date(b.date)-new Date(a.date);
-    if(sort==='date-asc')return new Date(a.date)-new Date(b.date);
-    if(sort==='job-asc')return(a.jobNumber||'').localeCompare(b.jobNumber||'');
+    if(sort==='date-desc'){
+      const diff=new Date(b.date)-new Date(a.date);
+      if(diff!==0)return diff;
+      // Tiebreak by job number descending
+      return (b.jobNumber||'').localeCompare(a.jobNumber||'',undefined,{numeric:true});
+    }
+    if(sort==='date-asc'){
+      const diff=new Date(a.date)-new Date(b.date);
+      if(diff!==0)return diff;
+      return (a.jobNumber||'').localeCompare(b.jobNumber||'',undefined,{numeric:true});
+    }
+    if(sort==='job-asc')return(a.jobNumber||'').localeCompare(b.jobNumber||'',undefined,{numeric:true});
     if(sort==='customer-asc')return(a.customer||'').localeCompare(b.customer||'');
     return 0;
   });

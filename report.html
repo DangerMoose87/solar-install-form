@@ -85,8 +85,8 @@ const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWc
 const params=new URLSearchParams(window.location.search);
 const jobNum=params.get('job');
 
-function v(val){return val&&val.trim()!==''?val:'—';}
-function field(label,val){return`<div class="field"><span class="lbl">${label}</span><span class="val${(!val||val.trim()===''||val==='—')?' empty':''}">${v(val)}</span></div>`;}
+function v(val){if(val===null||val===undefined||val==='')return '—';const s=String(val).trim();return s!==''?s:'—';}
+function field(label,val){const sv=v(val);return`<div class="field"><span class="lbl">${label}</span><span class="val${(sv==='—')?' empty':''}">${sv}</span></div>`;}
 function badge(val){return val?`<span class="badge">${val}</span>`:'<span class="val empty">—</span>';}
 
 function jsonpFetch(url, onSuccess, onError){
