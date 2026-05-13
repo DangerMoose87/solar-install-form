@@ -199,7 +199,13 @@ function renderJob(d){
       <span class="cl-label">${label}</span>
     </div>`;}
 
-  const instDate=d['Date']?new Date(d['Date']).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—';
+  function parseSheetDate(val){
+    if(!val && val!==0) return null;
+    if(typeof val==='number'){return new Date((val-25569)*86400*1000);}
+    const d=new Date(val);return isNaN(d)?null:d;
+  }
+  const dateObj=parseSheetDate(d['Date']);
+  const instDate=dateObj?dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):String(d['Date']||'—');
 
   document.getElementById('container').innerHTML=`
     <div class="job-header">
