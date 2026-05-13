@@ -144,7 +144,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
     <div class="f"><label>Supply conductor size</label><div class="rg" id="rg-supplyCond"><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',false)"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',false)"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',true)"><input type="radio" name="supplyCond" value="Other"/>Other</label></div><div class="other-wrap" id="other-supplyCond"><input type="text" placeholder="Please specify…"/></div></div>
     <div class="f"><label>Earth conductor size</label><div class="rg" id="rg-earthCond"><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',false)"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',false)"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',true)"><input type="radio" name="earthCond" value="Other"/>Other</label></div><div class="other-wrap" id="other-earthCond"><input type="text" placeholder="Please specify…"/></div></div>
     <div class="f"><label>Earth continuity verified</label><div class="rg" id="rg-earthCont"><label class="ri" onclick="selRb(this,'earthCont')"><input type="radio" name="earthCont" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'earthCont')"><input type="radio" name="earthCont" value="N/A"/>N/A</label></div></div>
-    <div class="f full"><label>Bonding</label><div class="cg" id="bondingGroup"><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
+    <div class="f full"><label>Bonding</label><div class="cg" id="bondingGroup"><label class="ci" onclick="selCb(this,event)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="selCb(this,event)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="selCb(this,event)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="selCb(this,event)"><input type="checkbox" value="Other"/>Other</label></div></div>
   </div>
 </div>
 
@@ -234,7 +234,8 @@ function selRb(el,name){
   updateProgress();
 }
 
-function selCb(el){
+function selCb(el,event){
+  if(event)event.preventDefault();
   el.classList.toggle('chk');
   el.querySelector('input').checked=el.classList.contains('chk');
 }
@@ -337,15 +338,28 @@ function buildCircuitBlock(id){
   const dv2=document.createElement('div');dv2.className='dv';block.appendChild(dv2);
   const sh2=document.createElement('div');sh2.className='sub';sh2.textContent='Overcurrent protective device';block.appendChild(sh2);
   const g3=document.createElement('div');g3.className='fg fg2';g3.style.marginBottom='10px';
-  g3.appendChild(makeRbField('Device type',n+'_opdType',['MCB','RCBO','RCD','Other'],block,true));
+  const opdField=makeRbField('Device type',n+'_opdType',['MCB','RCBO','RCD','Other'],block,true);
+  // Hook device type to show/hide RCD section
+  opdField.querySelectorAll('.ri').forEach(lbl=>{
+    const orig=lbl.onclick;
+    lbl.onclick=function(e){
+      if(orig)orig.call(this,e);
+      const val=lbl.querySelector('input').value;
+      const showRcd=val==='RCBO'||val==='RCD';
+      const rcdSec=block.querySelector('.rcd-section');
+      if(rcdSec){rcdSec.style.display=showRcd?'block':'none';}
+    };
+  });
+  g3.appendChild(opdField);
   g3.appendChild(makeRbField('Characteristic',n+'_opdChar',['B','C','Other'],block,true));
   g3.appendChild(makeRbField('Rating (A)',n+'_opdRating',['6','16','20','32','40','63','Other'],block,true));
   g3.appendChild(makeRbField('Breaking capacity',n+'_breakCap',['6kA','10kA'],block,false));
   block.appendChild(g3);
 
-  // RCD
-  const dv3=document.createElement('div');dv3.className='dv';block.appendChild(dv3);
-  const sh3=document.createElement('div');sh3.className='sub';sh3.textContent='RCD';block.appendChild(sh3);
+  // RCD section - hidden until RCBO or RCD selected
+  const rcdSection=document.createElement('div');rcdSection.className='rcd-section';rcdSection.style.display='none';
+  const dv3=document.createElement('div');dv3.className='dv';rcdSection.appendChild(dv3);
+  const sh3=document.createElement('div');sh3.className='sub';sh3.textContent='RCD';rcdSection.appendChild(sh3);
   const g4=document.createElement('div');g4.className='fg fg2';g4.style.marginBottom='10px';
   const rcdTypeField=makeRbField('RCD type',n+'_rcdType',['A','AC','S','Other'],block,true);
   g4.appendChild(rcdTypeField);
@@ -362,7 +376,8 @@ function buildCircuitBlock(id){
     const orig=lbl.onclick;
     lbl.onclick=function(e){if(orig)orig.call(this,e);disconnectField.style.display='flex';};
   });
-  block.appendChild(g4);
+  rcdSection.appendChild(g4);
+  block.appendChild(rcdSection);
 
   // Test results
   const dv4=document.createElement('div');dv4.className='dv';block.appendChild(dv4);
@@ -401,7 +416,9 @@ function updateStrings(val){
     const vocF=makeInpField('Voc STC (V)','number','0.1');g.appendChild(vocF);
     g.appendChild(makeRbField('DC cable size','dcCable-'+sid,['4mm','6mm','Other'],block,true));
     g.appendChild(makeRbField('Polarity check','polarity-'+sid,['Yes','No'],block,false));
-    g.appendChild(makeInpField('Isolator location','text'));
+    const isoField=makeInpField('Isolator location','text');
+    isoField.querySelector('input').setAttribute('data-field','isolator');
+    g.appendChild(isoField);
     block.appendChild(g);
     c.appendChild(block);
   }
@@ -427,7 +444,7 @@ function collectStrings(){
   return JSON.stringify(Array.from(document.querySelectorAll('#stringBlocks .dyn-block')).map((b,i)=>{
     const sid=i+1;
     const voc=b.querySelector('input[type=number]');
-    const iso=b.querySelector('input[type=text]');
+    const iso=b.querySelector('input[data-field="isolator"]');
     return{string:sid,voc:voc?voc.value:'',cable:getBlockRb(b,'dcCable-'+sid),polarity:getBlockRb(b,'polarity-'+sid),isolator:iso?iso.value:''};
   }));
 }
@@ -503,7 +520,7 @@ async function submitForm(){
     if(!cable){const rg=b.querySelector('#rg-dcCable-'+sid);markInv(rg?rg.closest('.f'):null,'String '+num+': Cable size required');errors.push('String '+num+': Cable size');}
     const pol=b.querySelector('input[name="polarity-'+sid+'"]:checked');
     if(!pol){const rg=b.querySelector('#rg-polarity-'+sid);markInv(rg?rg.closest('.f'):null,'String '+num+': Polarity required');errors.push('String '+num+': Polarity');}
-    const iso=b.querySelector('input[type=text]');
+    const iso=b.querySelector('input[data-field="isolator"]');
     if(!iso||!iso.value.trim()){markInv(iso?iso.closest('.f'):null,'String '+num+': Isolator location required');errors.push('String '+num+': Isolator location');}
   });
 
@@ -522,9 +539,8 @@ async function submitForm(){
   btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Submitting…';
 
   try{
-    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({headers:HEADERS,values:values})});
-    const data=await res.json();
-    showToast('Submission successful — job '+(data.jobNumber||''),'success');
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({headers:HEADERS,values:values})});
+    showToast('Submission successful!','success');
     setTimeout(()=>clearForm(),2000);
   }catch(err){
     showToast('Submission failed — check your connection','error');
