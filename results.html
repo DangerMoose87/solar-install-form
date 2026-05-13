@@ -240,8 +240,8 @@ function updateStats(){
   const thisMonth=allJobs.filter(j=>{const d=new Date(j.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).length;
   document.getElementById('statMonth').textContent=thisMonth;
   if(allJobs.length>0){
-    const sorted=[...allJobs].sort((a,b)=>new Date(b.date)-new Date(a.date));
-    document.getElementById('statRecent').textContent=sorted[0].customer||'—';
+    const sorted=[...allJobs].filter(j=>j.date).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    document.getElementById('statRecent').textContent=sorted.length>0?(sorted[0].customer||'—'):'—';
   }
 }
 
@@ -262,16 +262,20 @@ function renderTable(){
   });
   const tbody=document.getElementById('tableBody');
   if(jobs.length===0){tbody.innerHTML='<tr><td colspan="5" class="empty-row">No matching jobs found</td></tr>';return;}
-  tbody.innerHTML=jobs.map(j=>`<tr onclick="openJob('${j.jobNumber}')">
+  tbody.innerHTML=jobs.map(j=>`<tr class="job-row" data-job="${j.jobNumber||''}">
     <td><span class="badge">${j.jobNumber||''}</span></td>
     <td>${j.customer||'—'}</td>
     <td>${j.address||'—'}</td>
-    <td>${j.date?new Date(j.date).toLocaleDateString('en-GB'):'—'}</td>
+    <td>${j.date?new Date(j.date).toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'}):'—'}</td>
     <td>${j.installer||'—'}</td>
   </tr>`).join('');
+  tbody.querySelectorAll('.job-row').forEach(row=>{
+    row.addEventListener('click',function(){openJob(this.dataset.job);});
+  });
 }
 
 function openJob(jobNum){
+  sessionStorage.setItem('solarAuth','1');
   window.location.href='report.html?job='+encodeURIComponent(jobNum);
 }
 

@@ -80,7 +80,7 @@ header p{font-size:12px;color:var(--muted);margin-top:1px;}
 <script>
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
 
-if(sessionStorage.getItem('solarAuth')!=='1'){window.location.href='results.html';}
+// Auth is maintained via sessionStorage from results page
 
 const params=new URLSearchParams(window.location.search);
 const jobNum=params.get('job');
@@ -112,14 +112,28 @@ function jsonpFetch(url, onSuccess, onError){
 
 function loadJob(){
   if(!jobNum){document.getElementById('container').innerHTML='<div class="loading">No job number specified.</div>';return;}
+  // Set auth so back-navigation keeps session
+  sessionStorage.setItem('solarAuth','1');
   jsonpFetch(
     SCRIPT_URL+'?action=get&job='+encodeURIComponent(jobNum),
     function(data){
       if(data.result==='success'){renderJob(data.data);}
-      else{document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Job not found.</div>';}
+      else{document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Job '+jobNum+' not found in the sheet.</div>';}
     },
     function(){
-      document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Could not load job data — check your connection.</div>';
+      // Retry once
+      setTimeout(function(){
+        jsonpFetch(
+          SCRIPT_URL+'?action=get&job='+encodeURIComponent(jobNum),
+          function(data){
+            if(data.result==='success'){renderJob(data.data);}
+            else{document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Job not found.</div>';}
+          },
+          function(){
+            document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Could not load job data — check your connection and try refreshing.</div>';
+          }
+        );
+      },2000);
     }
   );
 }
