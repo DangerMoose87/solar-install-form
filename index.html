@@ -3,1055 +3,556 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Solar Install Test Results</title>
+<title>Solar Install — Test Results Form</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <style>
-  :root {
-    --bg: #f4f3ef;
-    --surface: #ffffff;
-    --surface2: #f9f8f5;
-    --border: rgba(0,0,0,0.10);
-    --border-strong: rgba(0,0,0,0.18);
-    --text: #1a1a18;
-    --text-muted: #6b6b66;
-    --text-faint: #a0a09a;
-    --accent: #2a6b3c;
-    --accent-bg: #e8f5ed;
-    --accent-border: #a8d4b5;
-    --accent-text: #1d5230;
-    --warn: #7a4f00;
-    --warn-bg: #fef3e0;
-    --warn-border: #f0c97a;
-    --info-bg: #eef4ff;
-    --info-border: #b3ccf5;
-    --info-text: #1d3f7a;
-    --danger: #8b1f1f;
-    --danger-bg: #fdeaea;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0 0 4rem;
-  }
-
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1.25rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
-  }
-
-  .logo {
-    width: 36px; height: 36px;
-    background: var(--accent);
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 18px; flex-shrink: 0;
-  }
-
-  header h1 {
-    font-size: 16px; font-weight: 600; color: var(--text);
-    letter-spacing: -0.01em;
-  }
-
-  header p {
-    font-size: 12px; color: var(--text-muted); margin-top: 1px;
-  }
-
-  .progress-strip {
-    height: 3px;
-    background: var(--border);
-    position: sticky;
-    top: 73px;
-    z-index: 99;
-  }
-  .progress-strip-bar {
-    height: 3px;
-    background: var(--accent);
-    width: 0%;
-    transition: width 0.4s ease;
-  }
-
-  .container {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-  }
-
-  .section-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    box-shadow: var(--shadow);
-  }
-
-  .section-header {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .section-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--accent-bg);
-    border: 1px solid var(--accent-border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
-    color: var(--accent-text);
-    flex-shrink: 0;
-  }
-
-  .section-title {
-    font-size: 15px; font-weight: 600;
-    color: var(--text); letter-spacing: -0.01em;
-  }
-
-  .section-icon { font-size: 18px; color: var(--text-muted); }
-
-  .fg { display: grid; gap: 14px; }
-  .fg2 { grid-template-columns: 1fr 1fr; }
-  .fg3 { grid-template-columns: 1fr 1fr 1fr; }
-  .full { grid-column: 1 / -1; }
-
-  .f { display: flex; flex-direction: column; gap: 5px; }
-  .f label {
-    font-size: 12px; font-weight: 500;
-    color: var(--text-muted); letter-spacing: 0.01em;
-  }
-
-  .f input, .f select {
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 8px 11px;
-    font-size: 14px;
-    background: var(--surface2);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    width: 100%;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    -webkit-appearance: none;
-  }
-
-  .f input:focus, .f select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(42,107,60,0.12);
-    background: var(--surface);
-  }
-
-  .rg { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 3px; }
-
-  .ri {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--text);
-    cursor: pointer;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 6px 11px;
-    background: var(--surface2);
-    user-select: none;
-    transition: all 0.12s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .ri:hover { border-color: var(--accent); background: var(--accent-bg); }
-  .ri input { display: none; }
-  .ri.sel {
-    background: var(--accent-bg);
-    border-color: var(--accent);
-    color: var(--accent-text);
-    font-weight: 500;
-  }
-
-  .cg { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 3px; }
-  .ci {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--text);
-    cursor: pointer;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 6px 11px;
-    background: var(--surface2);
-    user-select: none;
-    transition: all 0.12s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .ci input { display: none; }
-  .ci.chk {
-    background: var(--accent-bg);
-    border-color: var(--accent);
-    color: var(--accent-text);
-    font-weight: 500;
-  }
-
-  .divider { height: 1px; background: var(--border); margin: 1.1rem 0; }
-
-  .sub-head {
-    font-size: 11px; font-weight: 600;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: 10px; margin-top: 2px;
-  }
-
-  .dyn-block {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1.1rem;
-    margin-bottom: 10px;
-  }
-
-  .dyn-title {
-    font-size: 13px; font-weight: 600;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  .rm-btn {
-    margin-left: auto;
-    font-size: 12px; color: var(--text-faint);
-    background: none; border: none; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    padding: 2px 7px;
-    border-radius: var(--radius-sm);
-    transition: all 0.12s;
-  }
-  .rm-btn:hover { color: var(--danger); background: var(--danger-bg); }
-
-  .hint {
-    font-size: 12px; color: var(--text-faint);
-    display: flex; align-items: center; gap: 5px;
-    margin-top: -6px;
-  }
-
-  .conditional-field {
-    overflow: hidden;
-    max-height: 0; opacity: 0;
-    transition: max-height 0.28s ease, opacity 0.2s ease, margin 0.28s ease;
-    margin-top: 0;
-  }
-  .conditional-field.visible { max-height: 90px; opacity: 1; margin-top: 0; }
-
-  .emlite-wrap {
-    background: var(--warn-bg);
-    border: 1px solid var(--warn-border);
-    border-radius: var(--radius-sm);
-    padding: 10px 13px;
-    display: flex; flex-direction: column; gap: 5px;
-  }
-  .emlite-wrap label { font-size: 12px; font-weight: 500; color: var(--warn); }
-  .emlite-wrap input {
-    border: 1px solid var(--warn-border);
-    border-radius: var(--radius-sm);
-    padding: 7px 10px; font-size: 14px;
-    background: var(--surface);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif; width: 100%;
-  }
-  .emlite-wrap input:focus { outline: none; border-color: var(--warn); }
-
-  .checklist-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 13px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-    cursor: pointer; user-select: none;
-    transition: all 0.15s;
-    background: var(--surface2);
-  }
-  .checklist-item:last-child { margin-bottom: 0; }
-  .checklist-item:hover { border-color: var(--accent); background: var(--accent-bg); }
-  .checklist-item.done {
-    background: var(--accent-bg);
-    border-color: var(--accent-border);
-  }
-  .check-box {
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    border: 1.5px solid var(--border-strong);
-    background: var(--surface);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-  .checklist-item.done .check-box {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-  .check-box i { font-size: 13px; color: white; opacity: 0; transition: opacity 0.15s; }
-  .checklist-item.done .check-box i { opacity: 1; }
-  .checklist-item input[type="checkbox"] { display: none; }
-  .check-label { font-size: 14px; color: var(--text); line-height: 1.4; }
-  .checklist-item.done .check-label { color: var(--accent-text); font-weight: 500; }
-
-  .progress-wrap {
-    margin-bottom: 1.1rem;
-  }
-  .progress-meta {
-    display: flex; justify-content: space-between;
-    font-size: 12px; color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .progress-track {
-    height: 6px; background: var(--border);
-    border-radius: 99px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 6px; background: var(--accent);
-    border-radius: 99px; width: 0%;
-    transition: width 0.35s ease;
-  }
-
-  .submit-row {
-    display: flex; gap: 10px; margin-top: 1.5rem;
-  }
-
-  .btn-primary {
-    flex: 1;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 13px 20px;
-    font-size: 15px; font-weight: 600;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: opacity 0.15s, transform 0.12s;
-    letter-spacing: -0.01em;
-  }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
-
-  .btn-secondary {
-    background: var(--surface);
-    color: var(--text-muted);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 13px 18px;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    display: flex; align-items: center; gap: 7px;
-    transition: all 0.12s;
-  }
-  .btn-secondary:hover { background: var(--surface2); color: var(--text); }
-
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--text); color: white;
-    padding: 11px 20px;
-    border-radius: var(--radius-sm);
-    font-size: 14px; font-weight: 500;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s, bottom 0.3s;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    z-index: 999;
-  }
-  .toast.show { opacity: 1; bottom: 28px; }
-  .toast.success { background: var(--accent); }
-  .toast.error { background: var(--danger); }
-
-  .empty-state {
-    font-size: 13px; color: var(--text-faint);
-    padding: 0.5rem 0; font-style: italic;
-  }
-
-  @media (max-width: 600px) {
-    .container { padding: 1rem; }
-    .fg2, .fg3 { grid-template-columns: 1fr; }
-    header { padding: 1rem 1.25rem; }
-    .section-card { padding: 1.1rem; }
-  }
+:root{--bg:#f4f3ef;--surface:#fff;--surface2:#f9f8f5;--border:rgba(0,0,0,.10);--border-s:rgba(0,0,0,.18);--text:#1a1a18;--muted:#6b6b66;--faint:#a0a09a;--accent:#2a6b3c;--accent-bg:#e8f5ed;--accent-bd:#a8d4b5;--accent-t:#1d5230;--warn:#7a4f00;--warn-bg:#fef3e0;--warn-bd:#f0c97a;--danger:#c0392b;--danger-bg:#fdeaea;--danger-bd:rgba(192,57,43,.3);--r:10px;--rs:6px;--shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:4rem;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.logo{width:36px;height:36px;background:var(--accent);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;}
+header p{font-size:12px;color:var(--muted);margin-top:1px;}
+header nav{margin-left:auto;}
+header nav a{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border-s);border-radius:var(--rs);padding:6px 12px;display:flex;align-items:center;gap:6px;transition:all .15s;}
+header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-t);}
+.pstrip{height:3px;background:var(--border);position:sticky;top:73px;z-index:99;}
+.pstrip-bar{height:3px;background:var(--accent);width:0%;transition:width .4s ease;}
+.container{max-width:760px;margin:0 auto;padding:2rem 1.5rem;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.sn{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--accent-t);flex-shrink:0;}
+.st{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.si{font-size:18px;color:var(--muted);}
+.fg{display:grid;gap:14px;}
+.fg2{grid-template-columns:1fr 1fr;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.full{grid-column:1/-1;}
+.f{display:flex;flex-direction:column;gap:5px;}
+.f label{font-size:12px;font-weight:500;color:var(--muted);}
+.f input,.f select{border:1px solid var(--border-s);border-radius:var(--rs);padding:8px 11px;font-size:14px;background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;}
+.f input:focus,.f select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,107,60,.12);background:var(--surface);}
+.rg{display:flex;flex-wrap:wrap;gap:7px;margin-top:3px;}
+.ri{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:1px solid var(--border-s);border-radius:var(--rs);padding:6px 11px;background:var(--surface2);user-select:none;transition:all .12s;font-family:'DM Sans',sans-serif;}
+.ri:hover{border-color:var(--accent);background:var(--accent-bg);}
+.ri input{display:none;}
+.ri.sel{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-t);font-weight:500;}
+.cg{display:flex;flex-wrap:wrap;gap:7px;margin-top:3px;}
+.ci{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;border:1px solid var(--border-s);border-radius:var(--rs);padding:6px 11px;background:var(--surface2);user-select:none;transition:all .12s;font-family:'DM Sans',sans-serif;}
+.ci input{display:none;}
+.ci.chk{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-t);font-weight:500;}
+.cond{display:none;}
+.cond.show{display:block;}
+.cond-grid{display:none;}
+.cond-grid.show{display:grid;}
+.other-wrap{display:none;margin-top:6px;}
+.other-wrap.show{display:block;}
+.other-wrap input{border:1px solid var(--border-s);border-radius:var(--rs);padding:7px 10px;font-size:13px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;}
+.other-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,107,60,.12);}
+.dv{height:1px;background:var(--border);margin:1.1rem 0;}
+.sub{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;margin-top:2px;}
+.dyn-block{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:1.1rem;margin-bottom:10px;}
+.dyn-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.rm-btn{margin-left:auto;font-size:12px;color:var(--faint);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;padding:2px 7px;border-radius:var(--rs);transition:all .12s;}
+.rm-btn:hover{color:var(--danger);background:var(--danger-bg);}
+.hint{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:5px;margin-top:-6px;}
+.emlite-wrap{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:var(--rs);padding:10px 13px;display:flex;flex-direction:column;gap:5px;margin-top:0;}
+.emlite-wrap label{font-size:12px;font-weight:500;color:var(--warn);}
+.emlite-wrap input{border:1px solid var(--warn-bd);border-radius:var(--rs);padding:7px 10px;font-size:14px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;}
+.emlite-wrap input:focus{outline:none;border-color:var(--warn);}
+.cl-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;user-select:none;transition:all .15s;background:var(--surface2);}
+.cl-item:last-child{margin-bottom:0;}
+.cl-item:hover{border-color:var(--accent);background:var(--accent-bg);}
+.cl-item.done{background:var(--accent-bg);border-color:var(--accent-bd);}
+.cb-box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border-s);background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.cl-item.done .cb-box{background:var(--accent);border-color:var(--accent);}
+.cb-box i{font-size:13px;color:#fff;opacity:0;transition:opacity .15s;}
+.cl-item.done .cb-box i{opacity:1;}
+.cl-item input[type=checkbox]{display:none;}
+.cl-label{font-size:14px;line-height:1.4;}
+.cl-item.done .cl-label{color:var(--accent-t);font-weight:500;}
+.pw{margin-bottom:1.1rem;}
+.pm{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;}
+.pt{height:6px;background:var(--border);border-radius:99px;overflow:hidden;}
+.pf{height:6px;background:var(--accent);border-radius:99px;width:0%;transition:width .35s ease;}
+.submit-row{display:flex;gap:10px;margin-top:1.5rem;}
+.btn-p{flex:1;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:13px 20px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s,transform .12s;letter-spacing:-.01em;}
+.btn-p:hover{opacity:.88;}
+.btn-p:active{transform:scale(.98);}
+.btn-p:disabled{opacity:.45;cursor:not-allowed;}
+.btn-s{background:var(--surface);color:var(--muted);border:1px solid var(--border-s);border-radius:var(--rs);padding:13px 18px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px;transition:all .12s;}
+.btn-s:hover{background:var(--surface2);color:var(--text);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:11px 20px;border-radius:var(--rs);font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .3s,bottom .3s;white-space:nowrap;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999;}
+.toast.show{opacity:1;bottom:28px;}
+.toast.success{background:var(--accent);}
+.toast.error{background:var(--danger);}
+.empty-state{font-size:13px;color:var(--faint);padding:.5rem 0;font-style:italic;}
+.inv input,.inv select{border-color:var(--danger)!important;background:var(--danger-bg)!important;}
+.inv .rg{outline:2px solid var(--danger);outline-offset:3px;border-radius:var(--rs);}
+.inv label{color:var(--danger)!important;}
+.inv-msg{font-size:12px;color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px;}
+@media(max-width:600px){.container{padding:1rem;}header{padding:1rem 1.25rem;}.fg2,.fg3{grid-template-columns:1fr;}.sc{padding:1.1rem;}}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
-  <div>
-    <h1>Solar Install Test Results</h1>
-    <p>Complete all sections before submitting</p>
-  </div>
+  <div><h1>Solar Install — Test Results</h1><p>Complete all sections before submitting</p></div>
+  <nav><a href="results.html"><i class="ti ti-list" aria-hidden="true"></i> View all jobs</a></nav>
 </header>
-
-<div class="progress-strip">
-  <div class="progress-strip-bar" id="formProgress"></div>
-</div>
-
+<div class="pstrip"><div class="pstrip-bar" id="formProgress"></div></div>
 <div class="container">
 
-  <!-- Section 1 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">1</span>
-      <i class="ti ti-user section-icon" aria-hidden="true"></i>
-      <span class="section-title">Customer details</span>
-    </div>
-    <div class="fg fg2">
-      <div class="f"><label>Customer name</label><input type="text" id="custName" placeholder="Full name or company"/></div>
-      <div class="f"><label>Date</label><input type="date" id="custDate"/></div>
-      <div class="f full"><label>Address</label><input type="text" id="custAddress" placeholder="Street address"/></div>
-      <div class="f"><label>Post code</label><input type="text" id="custPostcode" placeholder="e.g. EX8 1AB"/></div>
-      <div class="f"><label>Installer name</label><input type="text" id="installerName" placeholder="Full name"/></div>
-    </div>
+<!-- S1 -->
+<div class="sc">
+  <div class="sh"><span class="sn">1</span><i class="ti ti-user si" aria-hidden="true"></i><span class="st">Customer details</span></div>
+  <div class="fg fg2">
+    <div class="f"><label>Customer name</label><input type="text" id="custName" placeholder="Full name or company"/></div>
+    <div class="f"><label>Date</label><input type="date" id="custDate"/></div>
+    <div class="f full"><label>Address</label><input type="text" id="custAddress" placeholder="Street address"/></div>
+    <div class="f"><label>Post code</label><input type="text" id="custPostcode" placeholder="e.g. EX8 1AB"/></div>
+    <div class="f"><label>Installer name</label><input type="text" id="installerName" placeholder="Full name"/></div>
   </div>
-
-  <!-- Section 2 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">2</span>
-      <i class="ti ti-bolt section-icon" aria-hidden="true"></i>
-      <span class="section-title">Supply characteristics</span>
-    </div>
-    <div class="fg fg2">
-      <div class="f"><label>Supply type</label><div class="rg" id="supplyType"><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-C"/>TN-C</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-S"/>TN-S</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-C-S"/>TN-C-S</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(true)"><input type="radio" name="supplyType" value="TT"/>TT</label></div></div>
-      <div class="cf full" id="ttFields">
-        <div class="fg fg2" style="margin-top:0;">
-          <div class="f"><label>Earth stake location</label><input type="text" id="earthStakeLoc" placeholder=""/></div>
-          <div class="f"><label>Resistance to earth (Ω)</label><input type="number" step="0.01" id="resistanceToEarth" placeholder=""/></div>
-        </div>
-      </div>
-      <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="fuseRating"><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="Other"/>Other</label></div><div class="other-input" id="other-fuseRating"><input type="text" placeholder="Please specify…"/></div></div>
-      <div class="f"><label>Ze (Ω)</label><input type="number" step="0.001" id="ze" placeholder="0.000"/></div>
-      <div class="f"><label>PFC (kA)</label><input type="number" step="0.01" id="pfc" placeholder="0.00"/></div>
-      <div class="f"><label>Main switch location</label><input type="text" id="switchLoc" placeholder="e.g. Meter cupboard"/></div>
-      <div class="f"><label>Switch type</label><div class="rg" id="switchType"><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Main Switch"/>Main switch</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="RCD"/>RCD</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Other"/>Other</label></div><div class="other-input" id="other-switchType"><input type="text" placeholder="Please specify…"/></div></div>
-      <div class="f"><label>Switch rating</label><div class="rg" id="switchRating"><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="Other"/>Other</label></div><div class="other-input" id="other-switchRating"><input type="text" placeholder="Please specify…"/></div></div>
-      <div class="f"><label>Number of poles</label><div class="rg" id="numPoles"><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="1"/>1</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="2"/>2</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="3"/>3</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="4"/>4</label></div></div>
-      <div class="f"><label>Supply conductor size</label><div class="rg" id="supplyCond"><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="Other"/>Other</label></div><div class="other-input" id="other-supplyCond"><input type="text" placeholder="Please specify…"/></div></div>
-      <div class="f"><label>Earth conductor size</label><div class="rg" id="earthCond"><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="Other"/>Other</label></div><div class="other-input" id="other-earthCond"><input type="text" placeholder="Please specify…"/></div></div>
-      <div class="f"><label>Earth continuity verified</label><div class="rg" id="earthCont"><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="N/A"/>N/A</label></div></div>
-      <div class="f"><label>Bonding</label><div class="cg" id="bondingGroup"><label class="ci" onclick="cb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
-    </div>
-  </div>
-
-  <!-- Section 3 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">3</span>
-      <i class="ti ti-server section-icon" aria-hidden="true"></i>
-      <span class="section-title">DB / gateway details</span>
-    </div>
-    <div class="fg fg2">
-      <div class="f">
-        <label>Type</label>
-        <div class="rg" id="dbType">
-          <label class="ri" onclick="rb(this,'dbType');toggleEmlite('DB')"><input type="radio" name="dbType" value="DB"/>DB</label>
-          <label class="ri" onclick="rb(this,'dbType');toggleEmlite('Gateway')"><input type="radio" name="dbType" value="Gateway"/>Gateway</label>
-        </div>
-      </div>
-      <div class="f"><label>Location</label><input type="text" id="dbLocation" placeholder="e.g. Utility room"/></div>
-      <div class="full">
-        <div class="conditional-field" id="emliteField">
-          <div class="emlite-wrap">
-            <label><i class="ti ti-gauge" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>EMLite export meter serial number</label>
-            <input type="text" id="emliteSerial" placeholder="Enter serial number"/>
-          </div>
-        </div>
-      </div>
-      <div class="f"><label>Number of ways</label><input type="number" id="dbWays" placeholder=""/></div>
-      <div class="f"><label>SPD installed?</label><div class="rg" id="spdStatus"><label class="ri" onclick="rb(this,'spdStatus');toggleSPD('Yes')"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'spdStatus');toggleSPD('No')"><input type="radio" name="spdStatus" value="No"/>No</label></div></div>
-      <div class="cf" id="spdTypeField" style="grid-column:1/-1"><div class="f"><label>SPD type</label><div class="rg" id="spdType"><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T1"/>T1</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T2"/>T2</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T3"/>T3</label></div></div></div>
-      <div class="f"><label>Correct polarity</label><div class="rg" id="dbPolarity"><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="No"/>No</label></div></div>
-      <div class="f"><label>Directly connected to origin</label><div class="rg" id="dbOrigin"><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="No"/>No</label></div></div>
-      <div class="f"><label>How many circuits?</label><input type="number" id="dbCircuits" min="1" max="20" placeholder="" oninput="updateCircuits(this.value)"/></div>
-      <p class="hint full"><i class="ti ti-info-circle" style="font-size:13px" aria-hidden="true"></i> Section 4 populates automatically from this number</p>
-    </div>
-  </div>
-
-  <!-- Section 4 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">4</span>
-      <i class="ti ti-circuit-cell section-icon" aria-hidden="true"></i>
-      <span class="section-title">Circuit details</span>
-    </div>
-    <div id="circuitBlocks"><p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p></div>
-  </div>
-
-  <!-- Section 5 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">5</span>
-      <i class="ti ti-solar-panel section-icon" aria-hidden="true"></i>
-      <span class="section-title">PV details</span>
-    </div>
-    <div class="fg fg2" style="margin-bottom:1rem;">
-      <div class="f"><label>Number of strings</label><input type="number" id="numStrings" min="1" max="20" placeholder="" oninput="updateStrings(this.value)"/></div>
-    </div>
-    <div id="stringBlocks"></div>
-  </div>
-
-  <!-- Section 6 -->
-  <div class="section-card">
-    <div class="section-header">
-      <span class="section-num">6</span>
-      <i class="ti ti-clipboard-check section-icon" aria-hidden="true"></i>
-      <span class="section-title">Install checklist</span>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-meta">
-        <span id="progressText">0 of 4 completed</span>
-        <span id="progressPct">0%</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progressBar"></div></div>
-    </div>
-    <div id="checklistItems">
-      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Grid setting set to G99 during commissioning</span></div>
-      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Electricity rates and currency set during commissioning</span></div>
-      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Warning stickers applied</span></div>
-      <div class="checklist-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="check-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="check-label">Customer given quick walkthrough of app</span></div>
-    </div>
-  </div>
-
-  <div class="submit-row">
-    <button class="btn-secondary" onclick="clearForm()"><i class="ti ti-refresh" aria-hidden="true"></i> Clear</button>
-    <button class="btn-primary" id="submitBtn" onclick="submitForm()"><i class="ti ti-send" aria-hidden="true"></i> Submit to Google Sheets</button>
-  </div>
-
 </div>
 
+<!-- S2 -->
+<div class="sc">
+  <div class="sh"><span class="sn">2</span><i class="ti ti-bolt si" aria-hidden="true"></i><span class="st">Supply characteristics</span></div>
+  <div class="fg fg2">
+    <div class="f full">
+      <label>Supply type</label>
+      <div class="rg" id="rg-supplyType">
+        <label class="ri" onclick="selRb(this,'supplyType');showCond('ttFields',false)"><input type="radio" name="supplyType" value="TN-C"/>TN-C</label>
+        <label class="ri" onclick="selRb(this,'supplyType');showCond('ttFields',false)"><input type="radio" name="supplyType" value="TN-S"/>TN-S</label>
+        <label class="ri" onclick="selRb(this,'supplyType');showCond('ttFields',false)"><input type="radio" name="supplyType" value="TN-C-S"/>TN-C-S</label>
+        <label class="ri" onclick="selRb(this,'supplyType');showCond('ttFields',true)"><input type="radio" name="supplyType" value="TT"/>TT</label>
+      </div>
+    </div>
+    <div class="cond-grid full fg2" id="ttFields">
+      <div class="f"><label>Earth stake location</label><input type="text" id="earthStakeLoc"/></div>
+      <div class="f"><label>Resistance to earth (Ω)</label><input type="number" step="0.01" id="resistanceToEarth"/></div>
+    </div>
+    <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="rg-fuseRating"><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',true)"><input type="radio" name="fuseRating" value="Other"/>Other</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',false)"></label></div><div class="other-wrap" id="other-fuseRating"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>Ze (Ω)</label><input type="number" step="0.001" id="ze"/></div>
+    <div class="f"><label>PFC (kA)</label><input type="number" step="0.01" id="pfc"/></div>
+    <div class="f"><label>Main switch location</label><input type="text" id="switchLoc" placeholder="e.g. Meter cupboard"/></div>
+    <div class="f"><label>Switch type</label><div class="rg" id="rg-switchType"><label class="ri" onclick="selRb(this,'switchType');showOther('other-switchType',false)"><input type="radio" name="switchType" value="Main Switch"/>Main switch</label><label class="ri" onclick="selRb(this,'switchType');showOther('other-switchType',false)"><input type="radio" name="switchType" value="RCD"/>RCD</label><label class="ri" onclick="selRb(this,'switchType');showOther('other-switchType',true)"><input type="radio" name="switchType" value="Other"/>Other</label></div><div class="other-wrap" id="other-switchType"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>Switch rating</label><div class="rg" id="rg-switchRating"><label class="ri" onclick="selRb(this,'switchRating');showOther('other-switchRating',false)"><input type="radio" name="switchRating" value="63A"/>63A</label><label class="ri" onclick="selRb(this,'switchRating');showOther('other-switchRating',false)"><input type="radio" name="switchRating" value="80A"/>80A</label><label class="ri" onclick="selRb(this,'switchRating');showOther('other-switchRating',false)"><input type="radio" name="switchRating" value="100A"/>100A</label><label class="ri" onclick="selRb(this,'switchRating');showOther('other-switchRating',true)"><input type="radio" name="switchRating" value="Other"/>Other</label></div><div class="other-wrap" id="other-switchRating"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>Number of poles</label><div class="rg" id="rg-numPoles"><label class="ri" onclick="selRb(this,'numPoles')"><input type="radio" name="numPoles" value="1"/>1</label><label class="ri" onclick="selRb(this,'numPoles')"><input type="radio" name="numPoles" value="2"/>2</label><label class="ri" onclick="selRb(this,'numPoles')"><input type="radio" name="numPoles" value="3"/>3</label><label class="ri" onclick="selRb(this,'numPoles')"><input type="radio" name="numPoles" value="4"/>4</label></div></div>
+    <div class="f"><label>Supply conductor size</label><div class="rg" id="rg-supplyCond"><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',false)"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',false)"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="selRb(this,'supplyCond');showOther('other-supplyCond',true)"><input type="radio" name="supplyCond" value="Other"/>Other</label></div><div class="other-wrap" id="other-supplyCond"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>Earth conductor size</label><div class="rg" id="rg-earthCond"><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',false)"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',false)"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="selRb(this,'earthCond');showOther('other-earthCond',true)"><input type="radio" name="earthCond" value="Other"/>Other</label></div><div class="other-wrap" id="other-earthCond"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>Earth continuity verified</label><div class="rg" id="rg-earthCont"><label class="ri" onclick="selRb(this,'earthCont')"><input type="radio" name="earthCont" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'earthCont')"><input type="radio" name="earthCont" value="N/A"/>N/A</label></div></div>
+    <div class="f full"><label>Bonding</label><div class="cg" id="bondingGroup"><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="selCb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="sc">
+  <div class="sh"><span class="sn">3</span><i class="ti ti-server si" aria-hidden="true"></i><span class="st">DB / gateway details</span></div>
+  <div class="fg fg2">
+    <div class="f"><label>Type</label><div class="rg" id="rg-dbType"><label class="ri" onclick="selRb(this,'dbType');showCond('emliteField',true)"><input type="radio" name="dbType" value="DB"/>DB</label><label class="ri" onclick="selRb(this,'dbType');showCond('emliteField',false)"><input type="radio" name="dbType" value="Gateway"/>Gateway</label></div></div>
+    <div class="f"><label>Location</label><input type="text" id="dbLocation" placeholder="e.g. Utility room"/></div>
+    <div class="cond full" id="emliteField">
+      <div class="emlite-wrap"><label><i class="ti ti-gauge" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>EMLite export meter serial number</label><input type="text" id="emliteSerial" placeholder="Enter serial number"/></div>
+    </div>
+    <div class="f"><label>Number of ways</label><input type="number" id="dbWays"/></div>
+    <div class="f"><label>SPD installed?</label><div class="rg" id="rg-spdStatus"><label class="ri" onclick="selRb(this,'spdStatus');showCond('spdTypeField',true)"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'spdStatus');showCond('spdTypeField',false)"><input type="radio" name="spdStatus" value="No"/>No</label></div></div>
+    <div class="cond full" id="spdTypeField"><div class="f"><label>SPD type</label><div class="rg" id="rg-spdType"><label class="ri" onclick="selRb(this,'spdType')"><input type="radio" name="spdType" value="T1"/>T1</label><label class="ri" onclick="selRb(this,'spdType')"><input type="radio" name="spdType" value="T2"/>T2</label><label class="ri" onclick="selRb(this,'spdType')"><input type="radio" name="spdType" value="T3"/>T3</label></div></div></div>
+    <div class="f"><label>Correct polarity</label><div class="rg" id="rg-dbPolarity"><label class="ri" onclick="selRb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="No"/>No</label></div></div>
+    <div class="f"><label>Directly connected to origin</label><div class="rg" id="rg-dbOrigin"><label class="ri" onclick="selRb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="No"/>No</label></div></div>
+    <div class="f"><label>How many circuits?</label><input type="number" id="dbCircuits" min="1" max="20" oninput="updateCircuits(this.value)"/></div>
+    <p class="hint full"><i class="ti ti-info-circle" style="font-size:13px" aria-hidden="true"></i> Section 4 populates automatically from this number</p>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="sc">
+  <div class="sh"><span class="sn">4</span><i class="ti ti-circuit-cell si" aria-hidden="true"></i><span class="st">Circuit details</span></div>
+  <div id="circuitBlocks"><p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p></div>
+</div>
+
+<!-- S5 -->
+<div class="sc">
+  <div class="sh"><span class="sn">5</span><i class="ti ti-solar-panel si" aria-hidden="true"></i><span class="st">PV details</span></div>
+  <div class="fg fg2" style="margin-bottom:1rem;"><div class="f"><label>Number of strings</label><input type="number" id="numStrings" min="1" max="20" oninput="updateStrings(this.value)"/></div></div>
+  <div id="stringBlocks"></div>
+</div>
+
+<!-- S6 -->
+<div class="sc">
+  <div class="sh"><span class="sn">6</span><i class="ti ti-clipboard-check si" aria-hidden="true"></i><span class="st">Install checklist</span></div>
+  <div class="pw"><div class="pm"><span id="progressText">0 of 4 completed</span><span id="progressPct">0%</span></div><div class="pt"><div class="pf" id="progressBar"></div></div></div>
+  <div id="checklistItems">
+    <div class="cl-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="cb-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="cl-label">Grid setting set to G99 during commissioning</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="cb-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="cl-label">Electricity rates and currency set during commissioning</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="cb-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="cl-label">Warning stickers applied</span></div>
+    <div class="cl-item" onclick="toggleCheck(this)"><input type="checkbox"/><div class="cb-box"><i class="ti ti-check" aria-hidden="true"></i></div><span class="cl-label">Customer given quick walkthrough of app</span></div>
+  </div>
+</div>
+
+<div class="submit-row">
+  <button class="btn-s" onclick="clearForm()"><i class="ti ti-refresh" aria-hidden="true"></i> Clear</button>
+  <button class="btn-p" id="submitBtn" onclick="submitForm()"><i class="ti ti-send" aria-hidden="true"></i> Submit</button>
+</div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
+const HEADERS=['Date','Customer Name','Address','Post Code','Installer Name','Supply Type','Earth Stake Location','Resistance to Earth','Fuse Rating','Ze','PFC','Switch Location','Switch Type','Switch Rating','Num Poles','Supply Conductor','Earth Conductor','Earth Continuity','Bonding','DB Type','DB Location','EMLite Serial','Num Ways','SPD Installed','SPD Type','Correct Polarity','Connected to Origin','Num Circuits','Circuits JSON','Num Strings','Strings JSON','Checklist G99','Checklist Rates','Checklist Stickers','Checklist Walkthrough'];
 
-const HEADERS = [
-  'Date','Customer Name','Address','Post Code','Installer Name',
-  'Supply Type','Earth Stake Location','Resistance to Earth (Ω)','Fuse Rating','Ze (Ω)','PFC (kA)','Main Switch Location',
-  'Switch Type','Switch Rating','Num Poles','Supply Conductor','Earth Conductor',
-  'Earth Continuity','Bonding',
-  'DB/Gateway Type','DB Location','EMLite Serial','Num Ways',
-  'SPD Status','SPD Type','Correct Polarity','Connected to Origin','Num Circuits',
-  'Circuit Data',
-  'Num Strings','String Data',
-  'Checklist: G99 Set','Checklist: Rates Set','Checklist: Stickers','Checklist: Walkthrough'
-];
+document.getElementById('custDate').value=new Date().toISOString().split('T')[0];
 
-document.getElementById('custDate').value = new Date().toISOString().split('T')[0];
+// --- UI helpers ---
+function showCond(id,show){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(el.classList.contains('cond-grid')){el.classList.toggle('show',show);}
+  else{el.classList.toggle('show',show);}
+  if(!show){
+    el.querySelectorAll('input[type=text],input[type=number]').forEach(i=>i.value='');
+    el.querySelectorAll('.ri.sel').forEach(r=>r.classList.remove('sel'));
+    el.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+    el.querySelectorAll('.other-wrap').forEach(o=>{o.classList.remove('show');o.querySelector('input').value='';});
+    el.querySelectorAll('.cond,.cond-grid').forEach(c=>c.classList.remove('show'));
+  }
+}
 
-function rb(el, gid) {
-  document.querySelectorAll('#' + gid + ' .ri').forEach(o => o.classList.remove('sel'));
+function showOther(id,show){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('show',show);
+  if(!show&&el.querySelector('input'))el.querySelector('input').value='';
+}
+
+function selRb(el,name){
+  document.querySelectorAll('input[name="'+name+'"]').forEach(r=>{r.closest('.ri').classList.remove('sel');});
   el.classList.add('sel');
-  el.querySelector('input').checked = true;
-  updateFormProgress();
-}
-
-function rbLocal(el, gid, scope) {
-  scope.querySelectorAll('#' + gid + ' .ri').forEach(o => o.classList.remove('sel'));
-  el.classList.add('sel');
-  el.querySelector('input').checked = true;
-  const oi = scope.querySelector('#other-' + gid);
-  if (oi) {
-    if (el.querySelector('input').value === 'Other') { oi.classList.add('vis'); }
-    else { oi.classList.remove('vis'); oi.querySelector('input').value = ''; }
-  }
-}
-
-function cb(el) {
-  el.classList.toggle('chk');
-  el.querySelector('input').checked = el.classList.contains('chk');
-}
-
-function toggleEmlite(val) {
-  const field = document.getElementById('emliteField');
-  if (val === 'DB') {
-    field.classList.add('visible');
-  } else {
-    field.classList.remove('visible');
-    document.getElementById('emliteSerial').value = '';
-  }
-}
-function toggleTT(show) {
-  const f = document.getElementById('ttFields');
-  if (show) {
-    f.classList.add('vis');
-  } else {
-    f.classList.remove('vis');
-    document.getElementById('earthStakeLoc').value = '';
-    document.getElementById('resistanceToEarth').value = '';
-  }
-}
-
-function toggleSPD(v) {
-  const f = document.getElementById('spdTypeField');
-  if (v === 'Yes') {
-    f.classList.add('vis');
-  } else {
-    f.classList.remove('vis');
-    document.querySelectorAll('#spdType .ri').forEach(o => o.classList.remove('sel'));
-    document.querySelectorAll('input[name="spdType"]').forEach(o => o.checked = false);
-  }
-}
-
-function toggleCheck(item) {
-  item.classList.toggle('done');
-  item.querySelector('input[type="checkbox"]').checked = item.classList.contains('done');
+  el.querySelector('input').checked=true;
   updateProgress();
-  updateFormProgress();
 }
 
-function updateProgress() {
-  const items = document.querySelectorAll('#checklistItems .checklist-item');
-  const done = document.querySelectorAll('#checklistItems .checklist-item.done').length;
-  const total = items.length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressText').textContent = done + ' of ' + total + ' completed';
-  document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressBar').style.width = pct + '%';
+function selCb(el){
+  el.classList.toggle('chk');
+  el.querySelector('input').checked=el.classList.contains('chk');
 }
 
-function updateFormProgress() {
-  const filled = document.querySelectorAll('.ri.sel, .ci.chk, input[type="date"]:not([value=""]), .checklist-item.done').length;
-  const pct = Math.min(100, Math.round((filled / 30) * 100));
-  document.getElementById('formProgress').style.width = pct + '%';
+function toggleCheck(item){
+  item.classList.toggle('done');
+  item.querySelector('input[type=checkbox]').checked=item.classList.contains('done');
+  updateProgress();
 }
 
-function getVal(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
+function updateProgress(){
+  const items=document.querySelectorAll('#checklistItems .cl-item');
+  const done=document.querySelectorAll('#checklistItems .cl-item.done').length;
+  const total=items.length;
+  const pct=total>0?Math.round((done/total)*100):0;
+  document.getElementById('progressText').textContent=done+' of '+total+' completed';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressBar').style.width=pct+'%';
 }
 
-function getRbVal(name) {
-  const el = document.querySelector('input[name="' + name + '"]:checked');
-  return el ? el.value : '';
-}
-
-function getCbVals(groupId) {
-  return Array.from(document.querySelectorAll('#' + groupId + ' .ci.chk input')).map(i => i.value).join(', ');
-}
-
-function makeRG(name, options, scope) {
-  const d = document.createElement('div');
-  d.className = 'rg'; d.id = name;
-  options.forEach(opt => {
-    const lbl = document.createElement('label');
-    lbl.className = 'ri';
-    lbl.innerHTML = '<input type="radio" name="' + name + '" value="' + opt + '"/>' + opt;
-    lbl.onclick = function () { rbLocal(lbl, name, scope); };
-    d.appendChild(lbl);
+// --- Dynamic block helpers ---
+function makeRbGroup(name,opts,block){
+  const rg=document.createElement('div');
+  rg.className='rg';rg.id='rg-'+name;
+  opts.forEach(opt=>{
+    const lbl=document.createElement('label');lbl.className='ri';
+    const inp=document.createElement('input');inp.type='radio';inp.name=name;inp.value=opt;
+    lbl.appendChild(inp);lbl.appendChild(document.createTextNode(opt));
+    lbl.onclick=function(){
+      block.querySelectorAll('input[name="'+name+'"]').forEach(r=>r.closest('.ri').classList.remove('sel'));
+      lbl.classList.add('sel');inp.checked=true;
+      const ow=block.querySelector('#other-'+name);
+      if(ow)showOtherEl(ow,opt==='Other');
+    };
+    rg.appendChild(lbl);
   });
+  return rg;
+}
+
+function showOtherEl(el,show){
+  el.classList.toggle('show',show);
+  if(!show&&el.querySelector('input'))el.querySelector('input').value='';
+}
+
+function makeOtherWrap(name){
+  const d=document.createElement('div');d.className='other-wrap';d.id='other-'+name;
+  const i=document.createElement('input');i.type='text';i.placeholder='Please specify…';
+  d.appendChild(i);return d;
+}
+
+function makeRbField(label,name,opts,block,hasOther){
+  const d=document.createElement('div');d.className='f';
+  const l=document.createElement('label');l.textContent=label;d.appendChild(l);
+  d.appendChild(makeRbGroup(name,opts,block));
+  if(hasOther)d.appendChild(makeOtherWrap(name));
   return d;
 }
 
-function field(labelText, content) {
-  const d = document.createElement('div'); d.className = 'f';
-  const lbl = document.createElement('label'); lbl.textContent = labelText;
-  d.appendChild(lbl); d.appendChild(content); return d;
-}
-
-function inp(placeholder, type, step) {
-  const i = document.createElement('input');
-  i.type = type || 'text'; i.placeholder = placeholder;
-  if (step) i.step = step; return i;
-}
-
-function rgField(labelText, name, options, scope) {
-  const d = document.createElement('div'); d.className = 'f';
-  const lbl = document.createElement('label'); lbl.textContent = labelText;
-  d.appendChild(lbl); d.appendChild(makeRG(name, options, scope)); return d;
-}
-
-function mkRgFieldWithOther(labelText, name, options, scope) {
-  const d = document.createElement('div'); d.className = 'f';
-  const lbl = document.createElement('label'); lbl.textContent = labelText;
-  d.appendChild(lbl);
-  const rg = makeRG(name, options, scope);
-  d.appendChild(rg);
-  if (options.includes('Other')) {
-    const oi = document.createElement('div');
-    oi.className = 'other-input'; oi.id = 'other-' + name;
-    const inp = document.createElement('input');
-    inp.type = 'text'; inp.placeholder = 'Please specify…';
-    oi.appendChild(inp); d.appendChild(oi);
-  }
+function makeInpField(label,type,step){
+  const d=document.createElement('div');d.className='f';
+  const l=document.createElement('label');l.textContent=label;d.appendChild(l);
+  const i=document.createElement('input');i.type=type||'text';if(step)i.step=step;d.appendChild(i);
   return d;
 }
 
-let circuitCount = 0;
+function getBlockRb(block,name){
+  const el=block.querySelector('input[name="'+name+'"]:checked');
+  if(!el)return'';
+  if(el.value==='Other'){const ow=block.querySelector('#other-'+name+' input');return ow&&ow.value.trim()?ow.value.trim():'Other';}
+  return el.value;
+}
 
-function buildCircuitBlock(id) {
-  const n = 'c' + id;
-  const block = document.createElement('div');
-  block.className = 'dyn-block'; block.id = 'circ-' + id;
+// --- Circuit blocks ---
+let circuitCount=0;
 
-  const title = document.createElement('div'); title.className = 'dyn-title';
-  title.innerHTML = '<i class="ti ti-circuit-cell" aria-hidden="true"></i> Circuit ' + id;
-  const rm = document.createElement('button'); rm.className = 'rm-btn';
-  rm.innerHTML = '<i class="ti ti-x" aria-hidden="true"></i> Remove';
-  rm.onclick = () => block.remove();
-  title.appendChild(rm); block.appendChild(title);
+function buildCircuitBlock(id){
+  const n='c'+id;
+  const block=document.createElement('div');block.className='dyn-block';block.id='circ-'+id;
+  const title=document.createElement('div');title.className='dyn-title';
+  title.innerHTML='<i class="ti ti-circuit-cell" aria-hidden="true"></i> Circuit '+id;
+  const rm=document.createElement('button');rm.className='rm-btn';rm.innerHTML='<i class="ti ti-x"></i> Remove';rm.onclick=()=>block.remove();
+  title.appendChild(rm);block.appendChild(title);
 
-  const g1 = document.createElement('div'); g1.className = 'fg fg3'; g1.style.marginBottom = '10px';
-  g1.appendChild(mkRgFieldWithOther('Circuit type', n + '_circType', ['Inverter', 'EV Charger', 'Other'], block));
-  g1.appendChild(mkRgFieldWithOther('Type of wiring', n + '_wiringType', ['PVC', 'SWA', 'H07', 'Other'], block));
-  const pts = inp('e.g. 1', 'number'); pts.min = '1';
-  g1.appendChild(field('Number of points served', pts));
+  // General
+  const g1=document.createElement('div');g1.className='fg fg3';g1.style.marginBottom='10px';
+  g1.appendChild(makeRbField('Circuit type',n+'_circType',['Inverter','EV Charger','Other'],block,true));
+  g1.appendChild(makeRbField('Type of wiring',n+'_wiringType',['PVC','SWA','H07','Other'],block,true));
+  const ptsF=makeInpField('Points served','number');g1.appendChild(ptsF);
   block.appendChild(g1);
 
-  const dv1 = document.createElement('div'); dv1.className = 'divider'; block.appendChild(dv1);
-  const sh1 = document.createElement('div'); sh1.className = 'sub-head'; sh1.textContent = 'Conductor size'; block.appendChild(sh1);
-  const g2 = document.createElement('div'); g2.className = 'fg fg2'; g2.style.marginBottom = '10px';
-  g2.appendChild(mkRgFieldWithOther('Live (mm²)',n+'_live',['1','1.5','2.5','4','6','10','16','25','Other'],block));
-  g2.appendChild(mkRgFieldWithOther('CPC (mm²)',n+'_cpc',['1','1.5','2.5','4','6','10','16','25','Other'],block));
+  // Conductors
+  const dv1=document.createElement('div');dv1.className='dv';block.appendChild(dv1);
+  const sh1=document.createElement('div');sh1.className='sub';sh1.textContent='Conductor size';block.appendChild(sh1);
+  const g2=document.createElement('div');g2.className='fg fg2';g2.style.marginBottom='10px';
+  g2.appendChild(makeRbField('Live (mm²)',n+'_live',['1','1.5','2.5','4','6','10','16','25','Other'],block,true));
+  g2.appendChild(makeRbField('CPC (mm²)',n+'_cpc',['1','1.5','2.5','4','6','10','16','25','Other'],block,true));
   block.appendChild(g2);
 
-  const dv2 = document.createElement('div'); dv2.className = 'divider'; block.appendChild(dv2);
-  const sh2 = document.createElement('div'); sh2.className = 'sub-head'; sh2.textContent = 'Overcurrent protective device'; block.appendChild(sh2);
-  const g3 = document.createElement('div'); g3.className = 'fg fg2'; g3.style.marginBottom = '10px';
-  g3.appendChild(rgField('Device type', n + '_opdType', ['MCB', 'RCBO', 'RCD', 'Other'], block));
-  g3.appendChild(rgField('Characteristic', n + '_opdChar', ['B', 'C', 'Other'], block));
-  g3.appendChild(rgField('Rating (A)', n + '_opdRating', ['6', '16', '20', '32', '40', '63', 'Other'], block));
-  g3.appendChild(rgField('Breaking capacity', n + '_breakCap', ['6kA', '10kA'], block));
+  // OPD
+  const dv2=document.createElement('div');dv2.className='dv';block.appendChild(dv2);
+  const sh2=document.createElement('div');sh2.className='sub';sh2.textContent='Overcurrent protective device';block.appendChild(sh2);
+  const g3=document.createElement('div');g3.className='fg fg2';g3.style.marginBottom='10px';
+  g3.appendChild(makeRbField('Device type',n+'_opdType',['MCB','RCBO','RCD','Other'],block,true));
+  g3.appendChild(makeRbField('Characteristic',n+'_opdChar',['B','C','Other'],block,true));
+  g3.appendChild(makeRbField('Rating (A)',n+'_opdRating',['6','16','20','32','40','63','Other'],block,true));
+  g3.appendChild(makeRbField('Breaking capacity',n+'_breakCap',['6kA','10kA'],block,false));
   block.appendChild(g3);
 
-  const dv3 = document.createElement('div'); dv3.className = 'divider'; block.appendChild(dv3);
-  const sh3 = document.createElement('div'); sh3.className = 'sub-head'; sh3.textContent = 'RCD'; block.appendChild(sh3);
-  const g4 = document.createElement('div'); g4.className = 'fg fg2'; g4.style.marginBottom = '10px';
-  g4.appendChild(rgField('RCD type', n + '_rcdType', ['A', 'AC', 'S', 'Other'], block));
-  g4.appendChild(rgField('Operating current', n + '_rcdCurrent', ['10mA', '30mA', '100mA', 'Other'], block));
-  g4.appendChild(rgField('Rating (A)', n + '_rcdRating', ['6', '16', '20', '32', '40', '63', '80'], block));
+  // RCD
+  const dv3=document.createElement('div');dv3.className='dv';block.appendChild(dv3);
+  const sh3=document.createElement('div');sh3.className='sub';sh3.textContent='RCD';block.appendChild(sh3);
+  const g4=document.createElement('div');g4.className='fg fg2';g4.style.marginBottom='10px';
+  const rcdTypeField=makeRbField('RCD type',n+'_rcdType',['A','AC','S','Other'],block,true);
+  g4.appendChild(rcdTypeField);
+  g4.appendChild(makeRbField('Operating current',n+'_rcdCurrent',['10mA','30mA','100mA','Other'],block,true));
+  g4.appendChild(makeRbField('Rating (A)',n+'_rcdRating',['6','16','20','32','40','63','80'],block,false));
+  // Disconnect time — only show when RCD type selected
+  const disconnectField=makeInpField('Disconnect time (ms)','number','0.1');
+  disconnectField.style.display='none';
+  disconnectField.id='disconnectWrap-'+id;
+  g4.appendChild(disconnectField);
+  // Hook RCD type to show disconnect time
+  const rcdRg=rcdTypeField.querySelector('.rg');
+  rcdRg.querySelectorAll('.ri').forEach(lbl=>{
+    const orig=lbl.onclick;
+    lbl.onclick=function(e){if(orig)orig.call(this,e);disconnectField.style.display='flex';};
+  });
   block.appendChild(g4);
 
-  const dv4 = document.createElement('div'); dv4.className = 'divider'; block.appendChild(dv4);
-  const sh4 = document.createElement('div'); sh4.className = 'sub-head'; sh4.textContent = 'Test results'; block.appendChild(sh4);
-  const g5 = document.createElement('div'); g5.className = 'fg fg3';
-  g5.appendChild(field('R1+R2 (Ω)', inp('', 'number', '0.001')));
-  g5.appendChild(field('Zs (Ω)', inp('', 'number', '0.001')));
-  g5.appendChild(field('RCD disconnect time (ms)', inp('', 'number', '0.1')));
+  // Test results
+  const dv4=document.createElement('div');dv4.className='dv';block.appendChild(dv4);
+  const sh4=document.createElement('div');sh4.className='sub';sh4.textContent='Test results';block.appendChild(sh4);
+  const g5=document.createElement('div');g5.className='fg fg3';
+  g5.appendChild(makeInpField('R1+R2 (Ω)','number','0.001'));
+  g5.appendChild(makeInpField('Zs (Ω)','number','0.001'));
+  g5.appendChild(makeInpField('RCD disconnect time (ms)','number','0.1'));
   block.appendChild(g5);
   return block;
 }
 
-function updateCircuits(val) {
-  const n = Math.max(0, Math.min(20, parseInt(val) || 0));
-  const container = document.getElementById('circuitBlocks');
-  if (n === 0) {
-    container.innerHTML = '<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
-    circuitCount = 0; return;
-  }
-  if (circuitCount === 0 && n > 0) container.innerHTML = '';
-  while (circuitCount < n) { circuitCount++; container.appendChild(buildCircuitBlock(circuitCount)); }
-  while (circuitCount > n) { const el = document.getElementById('circ-' + circuitCount); if (el) el.remove(); circuitCount--; }
+function updateCircuits(val){
+  const n=Math.max(0,Math.min(20,parseInt(val)||0));
+  const c=document.getElementById('circuitBlocks');
+  if(n===0){c.innerHTML='<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';circuitCount=0;return;}
+  if(circuitCount===0&&n>0)c.innerHTML='';
+  while(circuitCount<n){circuitCount++;c.appendChild(buildCircuitBlock(circuitCount));}
+  while(circuitCount>n){const el=document.getElementById('circ-'+circuitCount);if(el)el.remove();circuitCount--;}
 }
 
-let stringCount = 0;
+// --- String blocks ---
+let stringCount=0;
 
-function updateStrings(val) {
-  const n = Math.max(0, Math.min(20, parseInt(val) || 0));
-  const container = document.getElementById('stringBlocks');
-  while (stringCount < n) {
+function updateStrings(val){
+  const n=Math.max(0,Math.min(20,parseInt(val)||0));
+  const c=document.getElementById('stringBlocks');
+  while(stringCount<n){
     stringCount++;
-    const sid = stringCount;
-    const div = document.createElement('div'); div.className = 'dyn-block'; div.id = 'str-' + sid;
-    div.innerHTML = '<div class="dyn-title"><i class="ti ti-sun" aria-hidden="true"></i> String ' + sid + '<button class="rm-btn" onclick="this.closest(\'.dyn-block\').remove()"><i class="ti ti-x" aria-hidden="true"></i> Remove</button></div>'
-      + '<div class="fg fg2">'
-      + '<div class="f"><label>Voc STC (V)</label><input type="number" step="0.1" placeholder=""/></div>'
-      + '<div class="f"><label>DC cable size</label><div class="rg" id="dcCable-' + sid + '"><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="4mm"/>4mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="6mm"/>6mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="Other"/>Other</label></div></div>'
-      + '<div class="f"><label>Polarity check</label><div class="rg" id="polarity-' + sid + '"><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="No"/>No</label></div></div>'
-      + '<div class="f"><label>Isolator location</label><input type="text" placeholder=""/></div>'
-      + '</div>';
-    container.appendChild(div);
+    const sid=stringCount;
+    const block=document.createElement('div');block.className='dyn-block';block.id='str-'+sid;
+    const title=document.createElement('div');title.className='dyn-title';
+    title.innerHTML='<i class="ti ti-sun" aria-hidden="true"></i> String '+sid+'<button class="rm-btn" onclick="this.closest(\'.dyn-block\').remove()"><i class="ti ti-x"></i> Remove</button>';
+    block.appendChild(title);
+    const g=document.createElement('div');g.className='fg fg2';
+    const vocF=makeInpField('Voc STC (V)','number','0.1');g.appendChild(vocF);
+    g.appendChild(makeRbField('DC cable size','dcCable-'+sid,['4mm','6mm','Other'],block,true));
+    g.appendChild(makeRbField('Polarity check','polarity-'+sid,['Yes','No'],block,false));
+    g.appendChild(makeInpField('Isolator location','text'));
+    block.appendChild(g);
+    c.appendChild(block);
   }
-  while (stringCount > n) { const el = document.getElementById('str-' + stringCount); if (el) el.remove(); stringCount--; }
+  while(stringCount>n){const el=document.getElementById('str-'+stringCount);if(el)el.remove();stringCount--;}
 }
 
-function collectCircuitData() {
-  const blocks = document.querySelectorAll('#circuitBlocks .dyn-block');
-  const circuits = Array.from(blocks).map((b, i) => {
-    const n = 'c' + (i + 1);
-    const gr = name => getRbInScope(name, b);
-    const ins = Array.from(b.querySelectorAll('input[type="text"], input[type="number"]')).map(e => e.value);
-    return {
-      circuit: i + 1,
-      type: gr(n + '_circType'), wiring: gr(n + '_wiringType'), points: ins[0] || '',
-      live: gr(n + '_live'), cpc: gr(n + '_cpc'),
-      opdType: gr(n + '_opdType'), opdChar: gr(n + '_opdChar'), opdRating: gr(n + '_opdRating'), breakCap: gr(n + '_breakCap'),
-      rcdType: gr(n + '_rcdType'), rcdCurrent: gr(n + '_rcdCurrent'), rcdRating: gr(n + '_rcdRating'),
-      r1r2: ins[1] || '', zs: ins[2] || '', zsDisconnect: ins[3] || ''
-    };
-  });
-  return JSON.stringify(circuits);
+// --- Data collection ---
+function getVal(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function getRb(name){const el=document.querySelector('input[name="'+name+'"]:checked');if(!el)return'';if(el.value==='Other'){const ow=document.getElementById('other-'+name);if(ow){const i=ow.querySelector('input');if(i&&i.value.trim())return i.value.trim();}}return el.value;}
+function getCb(gid){return Array.from(document.querySelectorAll('#'+gid+' .ci.chk input')).map(i=>i.value).join(', ');}
+function isShown(id){const el=document.getElementById(id);return el&&el.classList.contains('show');}
+function getChk(idx){const items=document.querySelectorAll('#checklistItems .cl-item');return items[idx]&&items[idx].classList.contains('done')?'Yes':'No';}
+
+function collectCircuits(){
+  return JSON.stringify(Array.from(document.querySelectorAll('#circuitBlocks .dyn-block')).map((b,i)=>{
+    const n='c'+(i+1);
+    const nums=Array.from(b.querySelectorAll('input[type=number]:not([name]),input[type=text]:not(.other-wrap input)')).map(e=>e.value);
+    return{circuit:i+1,type:getBlockRb(b,n+'_circType'),wiring:getBlockRb(b,n+'_wiringType'),points:nums[0]||'',live:getBlockRb(b,n+'_live'),cpc:getBlockRb(b,n+'_cpc'),opdType:getBlockRb(b,n+'_opdType'),opdChar:getBlockRb(b,n+'_opdChar'),opdRating:getBlockRb(b,n+'_opdRating'),breakCap:getBlockRb(b,n+'_breakCap'),rcdType:getBlockRb(b,n+'_rcdType'),rcdCurrent:getBlockRb(b,n+'_rcdCurrent'),rcdRating:getBlockRb(b,n+'_rcdRating'),rcdDisconnect:nums[1]||'',r1r2:nums[2]||'',zs:nums[3]||'',zsDisconnect:nums[4]||''};
+  }));
 }
 
-function collectStringData() {
-  const blocks = document.querySelectorAll('#stringBlocks .dyn-block');
-  const strings = Array.from(blocks).map((b, i) => {
-    const sid = i + 1;
-    const voc = b.querySelector('input[type="number"]');
-    const cableEl = b.querySelector('input[type="radio"][name^="dcCable"]:checked');
-    const cable = cableEl ? (cableEl.value==='Other' ? (b.querySelector('#other-dcCable-'+sid+' input')||{value:''}).value||'Other' : cableEl.value) : '';
-    const polarity = b.querySelector('input[type="radio"][name^="polarity"]:checked');
-    const inputs = Array.from(b.querySelectorAll('input[type="text"]'));
-    const isoLoc = inputs[inputs.length-1];
-    return { string: sid, voc: voc ? voc.value : '', cable: cable, polarity: polarity ? polarity.value : '', isolator: isoLoc ? isoLoc.value : '' };
-  });
-  return JSON.stringify(strings);
+function collectStrings(){
+  return JSON.stringify(Array.from(document.querySelectorAll('#stringBlocks .dyn-block')).map((b,i)=>{
+    const sid=i+1;
+    const voc=b.querySelector('input[type=number]');
+    const iso=b.querySelector('input[type=text]');
+    return{string:sid,voc:voc?voc.value:'',cable:getBlockRb(b,'dcCable-'+sid),polarity:getBlockRb(b,'polarity-'+sid),isolator:iso?iso.value:''};
+  }));
 }
 
-function getChecklistVal(index) {
-  const items = document.querySelectorAll('#checklistItems .checklist-item');
-  return items[index] && items[index].classList.contains('done') ? 'Yes' : 'No';
+// --- Validation ---
+function clearValidation(){document.querySelectorAll('.inv').forEach(el=>{el.classList.remove('inv');const m=el.querySelector('.inv-msg');if(m)m.remove();});}
+
+function markInv(wrapper,msg){
+  if(!wrapper||wrapper.classList.contains('inv'))return;
+  wrapper.classList.add('inv');
+  const m=document.createElement('span');m.className='inv-msg';
+  m.innerHTML='<i class="ti ti-alert-circle" style="font-size:12px"></i>'+msg;
+  wrapper.appendChild(m);
 }
 
-function showToast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + (type || '');
-  setTimeout(() => { t.className = 'toast'; }, 4000);
-}
+function chkText(id,label,errors){const el=document.getElementById(id);const w=el?el.closest('.f'):null;if(!el||!el.value.trim()){markInv(w,label+' is required');errors.push(label);}}
+function chkRb(name,label,errors){const el=document.querySelector('input[name="'+name+'"]:checked');const w=document.getElementById('rg-'+name);const wp=w?w.closest('.f'):null;if(!el){markInv(wp,label+' is required');errors.push(label);}}
 
-function clearValidation() {
-  document.querySelectorAll('.field-invalid').forEach(el => {
-    el.classList.remove('field-invalid');
-    const msg = el.querySelector('.validation-msg');
-    if (msg) msg.remove();
-  });
-}
-
-function markInvalid(el, msg) {
-  el.classList.add('field-invalid');
-  if (!el.querySelector('.validation-msg')) {
-    const m = document.createElement('span');
-    m.className = 'validation-msg';
-    m.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px" aria-hidden="true"></i>' + msg;
-    el.appendChild(m);
-  }
-}
-
-function validateTextId(id, label, errors) {
-  const el = document.getElementById(id);
-  const wrapper = el ? el.closest('.f') : null;
-  if (!el || !el.value.trim()) {
-    if (wrapper) markInvalid(wrapper, label + ' is required');
-    errors.push(label);
-  }
-}
-
-function validateRb(name, label, errors) {
-  const checked = document.querySelector('input[name="' + name + '"]:checked');
-  const group = document.getElementById(name);
-  const wrapper = group ? group.closest('.f') : null;
-  if (!checked) {
-    if (wrapper) markInvalid(wrapper, label + ' is required');
-    errors.push(label);
-  }
-}
-
-function isVisible(id) {
-  const el = document.getElementById(id);
-  return el && (el.classList.contains('vis') || el.classList.contains('visible'));
-}
-
-async function submitForm() {
+// --- Submit ---
+async function submitForm(){
   clearValidation();
-  const errors = [];
-  const unchecked = document.querySelectorAll('#checklistItems .checklist-item:not(.done)').length;
+  const errors=[];
 
-  // Section 1 — all mandatory
-  validateTextId('custName', 'Customer name', errors);
-  validateTextId('custDate', 'Date', errors);
-  validateTextId('custAddress', 'Address', errors);
-  validateTextId('custPostcode', 'Post code', errors);
-  validateTextId('installerName', 'Installer name', errors);
+  // S1
+  chkText('custName','Customer name',errors);
+  chkText('custDate','Date',errors);
+  chkText('custAddress','Address',errors);
+  chkText('custPostcode','Post code',errors);
+  chkText('installerName','Installer name',errors);
 
-  // Section 2 — all mandatory except bonding
-  validateRb('supplyType', 'Supply type', errors);
-  if (isVisible('ttFields')) {
-    validateTextId('earthStakeLoc', 'Earth stake location', errors);
-    validateTextId('resistanceToEarth', 'Resistance to earth', errors);
-  }
-  validateRb('fuseRating', 'Fuse rating', errors);
-  validateTextId('ze', 'Ze', errors);
-  validateTextId('pfc', 'PFC', errors);
-  validateTextId('switchLoc', 'Main switch location', errors);
-  validateRb('switchType', 'Switch type', errors);
-  validateRb('switchRating', 'Switch rating', errors);
-  validateRb('numPoles', 'Number of poles', errors);
-  validateRb('supplyCond', 'Supply conductor size', errors);
-  validateRb('earthCond', 'Earth conductor size', errors);
-  validateRb('earthCont', 'Earth continuity', errors);
+  // S2
+  chkRb('supplyType','Supply type',errors);
+  if(isShown('ttFields')){chkText('earthStakeLoc','Earth stake location',errors);chkText('resistanceToEarth','Resistance to earth',errors);}
+  chkRb('fuseRating','Fuse rating',errors);
+  chkText('ze','Ze',errors);
+  chkText('pfc','PFC',errors);
+  chkText('switchLoc','Main switch location',errors);
+  chkRb('switchType','Switch type',errors);
+  chkRb('switchRating','Switch rating',errors);
+  chkRb('numPoles','Number of poles',errors);
+  chkRb('supplyCond','Supply conductor size',errors);
+  chkRb('earthCond','Earth conductor size',errors);
+  chkRb('earthCont','Earth continuity',errors);
 
-  // Section 3 — all mandatory (conditional fields only when visible)
-  validateRb('dbType', 'DB / gateway type', errors);
-  validateTextId('dbLocation', 'DB location', errors);
-  if (isVisible('emliteField')) {
-    validateTextId('emliteSerial', 'EMLite serial number', errors);
-  }
-  validateTextId('dbWays', 'Number of ways', errors);
-  validateRb('spdStatus', 'SPD installed', errors);
-  if (isVisible('spdTypeField')) {
-    validateRb('spdType', 'SPD type', errors);
-  }
-  validateRb('dbPolarity', 'Correct polarity', errors);
-  validateRb('dbOrigin', 'Connected to origin', errors);
-  validateTextId('dbCircuits', 'Number of circuits', errors);
+  // S3
+  chkRb('dbType','DB / gateway type',errors);
+  chkText('dbLocation','DB location',errors);
+  if(isShown('emliteField'))chkText('emliteSerial','EMLite serial number',errors);
+  chkText('dbWays','Number of ways',errors);
+  chkRb('spdStatus','SPD installed',errors);
+  if(isShown('spdTypeField'))chkRb('spdType','SPD type',errors);
+  chkRb('dbPolarity','Correct polarity',errors);
+  chkRb('dbOrigin','Connected to origin',errors);
+  chkText('dbCircuits','Number of circuits',errors);
 
-  // Section 4 — validate all circuit blocks
-  document.querySelectorAll('#circuitBlocks .dyn-block').forEach((block, i) => {
-    const num = i + 1;
-    const n = 'c' + num;
-    const fields = [
-      { name: n + '_circType', label: 'Circuit ' + num + ': Circuit type', type: 'rb' },
-      { name: n + '_wiringType', label: 'Circuit ' + num + ': Type of wiring', type: 'rb' },
-      { name: n + '_live', label: 'Circuit ' + num + ': Live conductor size', type: 'rb' },
-      { name: n + '_cpc', label: 'Circuit ' + num + ': CPC conductor size', type: 'rb' },
-      { name: n + '_opdType', label: 'Circuit ' + num + ': Device type', type: 'rb' },
-      { name: n + '_opdChar', label: 'Circuit ' + num + ': Characteristic', type: 'rb' },
-      { name: n + '_opdRating', label: 'Circuit ' + num + ': OPD rating', type: 'rb' },
-      { name: n + '_breakCap', label: 'Circuit ' + num + ': Breaking capacity', type: 'rb' },
-      { name: n + '_rcdType', label: 'Circuit ' + num + ': RCD type', type: 'rb' },
-      { name: n + '_rcdCurrent', label: 'Circuit ' + num + ': RCD operating current', type: 'rb' },
-      { name: n + '_rcdRating', label: 'Circuit ' + num + ': RCD rating', type: 'rb' },
-    ];
-    fields.forEach(f => {
-      const checked = block.querySelector('input[name="' + f.name + '"]:checked');
-      if (!checked) {
-        const group = block.querySelector('#' + f.name);
-        const wrapper = group ? group.closest('.f') : null;
-        if (wrapper) markInvalid(wrapper, f.label + ' is required');
-        errors.push(f.label);
-      }
+  // S4
+  document.querySelectorAll('#circuitBlocks .dyn-block').forEach((b,i)=>{
+    const num=i+1;const n='c'+num;
+    [['_circType','Circuit type'],[' _wiringType','Wiring type'],['_live','Live conductor'],['_cpc','CPC conductor'],['_opdType','Device type'],['_opdChar','Characteristic'],['_opdRating','OPD rating'],['_breakCap','Breaking capacity']].forEach(([k,l])=>{
+      const el=b.querySelector('input[name="'+n+k.trim()+'"]:checked');
+      if(!el){const rg=b.querySelector('#rg-'+n+k.trim());const w=rg?rg.closest('.f'):null;markInv(w,'Circuit '+num+': '+l+' required');errors.push('Circuit '+num+': '+l);}
     });
-    // Text/number inputs: points served, r1r2, zs, rcd disconnect
-    const textInputs = Array.from(block.querySelectorAll('input[type="number"]:not([name]), input[type="text"]:not([placeholder="Please specify…"])'));
-    const textLabels = ['Points served', 'R1+R2', 'Zs', 'RCD disconnect time'];
-    textInputs.forEach((inp, idx) => {
-      if (!inp.value.trim()) {
-        const wrapper = inp.closest('.f');
-        const label = 'Circuit ' + num + ': ' + (textLabels[idx] || 'Field ' + (idx+1));
-        if (wrapper) markInvalid(wrapper, label + ' is required');
-        errors.push(label);
-      }
-    });
+    const nums=Array.from(b.querySelectorAll('input[type=number]:not([style*="none"])')).filter(e=>!e.closest('.other-wrap'));
+    if(!nums[0]||!nums[0].value.trim()){const w=nums[0]?nums[0].closest('.f'):null;markInv(w,'Circuit '+num+': Points served required');errors.push('Circuit '+num+': Points served');}
   });
 
-  // Section 5 — validate all string blocks
-  document.querySelectorAll('#stringBlocks .dyn-block').forEach((block, i) => {
-    const num = i + 1;
-    // Voc number input
-    const voc = block.querySelector('input[type="number"]');
-    if (!voc || !voc.value.trim()) {
-      const wrapper = voc ? voc.closest('.f') : null;
-      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Voc STC is required');
-      errors.push('String ' + num + ': Voc STC');
-    }
-    // DC cable size radio
-    const cable = block.querySelector('input[name^="dcCable"]:checked');
-    if (!cable) {
-      const group = block.querySelector('[id^="dcCable"]');
-      const wrapper = group ? group.closest('.f') : null;
-      if (wrapper) markInvalid(wrapper, 'String ' + num + ': DC cable size is required');
-      errors.push('String ' + num + ': DC cable size');
-    }
-    // Polarity radio
-    const polarity = block.querySelector('input[name^="polarity"]:checked');
-    if (!polarity) {
-      const group = block.querySelector('[id^="polarity"]');
-      const wrapper = group ? group.closest('.f') : null;
-      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Polarity check is required');
-      errors.push('String ' + num + ': Polarity check');
-    }
-    // Isolator location text
-    const isoLoc = block.querySelector('input[type="text"]');
-    if (!isoLoc || !isoLoc.value.trim()) {
-      const wrapper = isoLoc ? isoLoc.closest('.f') : null;
-      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Isolator location is required');
-      errors.push('String ' + num + ': Isolator location');
-    }
+  // S5
+  document.querySelectorAll('#stringBlocks .dyn-block').forEach((b,i)=>{
+    const num=i+1;const sid=num;
+    const voc=b.querySelector('input[type=number]');
+    if(!voc||!voc.value.trim()){markInv(voc?voc.closest('.f'):null,'String '+num+': Voc STC required');errors.push('String '+num+': Voc STC');}
+    const cable=b.querySelector('input[name="dcCable-'+sid+'"]:checked');
+    if(!cable){const rg=b.querySelector('#rg-dcCable-'+sid);markInv(rg?rg.closest('.f'):null,'String '+num+': Cable size required');errors.push('String '+num+': Cable size');}
+    const pol=b.querySelector('input[name="polarity-'+sid+'"]:checked');
+    if(!pol){const rg=b.querySelector('#rg-polarity-'+sid);markInv(rg?rg.closest('.f'):null,'String '+num+': Polarity required');errors.push('String '+num+': Polarity');}
+    const iso=b.querySelector('input[type=text]');
+    if(!iso||!iso.value.trim()){markInv(iso?iso.closest('.f'):null,'String '+num+': Isolator location required');errors.push('String '+num+': Isolator location');}
   });
 
-  if (errors.length > 0) {
-    showToast(errors.length + ' required field' + (errors.length > 1 ? 's' : '') + ' missing — please check the form', 'error');
-    const first = document.querySelector('.field-invalid');
-    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const unchecked=document.querySelectorAll('#checklistItems .cl-item:not(.done)').length;
+
+  if(errors.length>0){
+    showToast(errors.length+' required field'+(errors.length>1?'s':'')+' missing','error');
+    const first=document.querySelector('.inv');if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
+  if(unchecked>0){showToast(unchecked+' checklist item'+(unchecked>1?'s':'')+' not yet completed','error');return;}
 
-  if (unchecked > 0) { showToast(unchecked + ' checklist item' + (unchecked > 1 ? 's' : '') + ' not yet completed', 'error'); return; }
+  const values=[getVal('custDate'),getVal('custName'),getVal('custAddress'),getVal('custPostcode'),getVal('installerName'),getRb('supplyType'),getVal('earthStakeLoc'),getVal('resistanceToEarth'),getRb('fuseRating'),getVal('ze'),getVal('pfc'),getVal('switchLoc'),getRb('switchType'),getRb('switchRating'),getRb('numPoles'),getRb('supplyCond'),getRb('earthCond'),getRb('earthCont'),getCb('bondingGroup'),getRb('dbType'),getVal('dbLocation'),getVal('emliteSerial'),getVal('dbWays'),getRb('spdStatus'),getRb('spdType'),getRb('dbPolarity'),getRb('dbOrigin'),getVal('dbCircuits'),collectCircuits(),getVal('numStrings'),collectStrings(),getChk(0),getChk(1),getChk(2),getChk(3)];
 
-  const values = [
-    getVal('custDate'), name, getVal('custAddress'), getVal('custPostcode'), installer,
-    getRbVal('supplyType'), getVal('earthStakeLoc'), getVal('resistanceToEarth'), getRbVal('fuseRating'), getVal('ze'), getVal('pfc'), getVal('switchLoc'),
-    getRbVal('switchType'), getRbVal('switchRating'), getRbVal('numPoles'), getRbVal('supplyCond'), getRbVal('earthCond'),
-    getRbVal('earthCont'), getCbVals('bondingGroup'),
-    getRbVal('dbType'), getVal('dbLocation'), getVal('emliteSerial'), getVal('dbWays'),
-    getRbVal('spdStatus'), getRbVal('spdType'), getRbVal('dbPolarity'), getRbVal('dbOrigin'), getVal('dbCircuits'),
-    collectCircuitData(),
-    getVal('numStrings'), collectStringData(),
-    getChecklistVal(0), getChecklistVal(1), getChecklistVal(2), getChecklistVal(3)
-  ];
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Submitting…';
 
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Submitting...';
-
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ headers: HEADERS, values: values })
-    });
-    const data = await res.json();
-    const jobNum = data.jobNumber || 'Submitted';
-    showToast('Submitted successfully — job ' + jobNum, 'success');
-    clearForm();
-  } catch (err) {
-    showToast('Submission failed — check your connection', 'error');
+  try{
+    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({headers:HEADERS,values:values})});
+    const data=await res.json();
+    showToast('Submission successful — job '+(data.jobNumber||''),'success');
+    setTimeout(()=>clearForm(),2000);
+  }catch(err){
+    showToast('Submission failed — check your connection','error');
   }
 
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i> Submit to Google Sheets';
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-send" aria-hidden="true"></i> Submit';
 }
 
-function clearForm() {
-  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(el => el.value = '');
-  document.getElementById('custDate').value = new Date().toISOString().split('T')[0];
-  document.querySelectorAll('.ri').forEach(el => el.classList.remove('sel'));
-  document.querySelectorAll('.ci').forEach(el => el.classList.remove('chk'));
-  document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
-  document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('done'));
-  document.getElementById('emliteField').classList.remove('visible');
-  document.getElementById('spdTypeField').classList.remove('vis');
-  document.getElementById('ttFields').classList.remove('vis');
-  document.getElementById('earthStakeLoc').value='';
-  document.getElementById('resistanceToEarth').value='';
-  document.getElementById('circuitBlocks').innerHTML = '<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
-  circuitCount = 0;
-  document.getElementById('stringBlocks').innerHTML = '';
-  stringCount = 0;
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');setTimeout(()=>{t.className='toast';},4000);}
+
+function clearForm(){
+  clearValidation();
+  document.querySelectorAll('input[type=text],input[type=number]').forEach(el=>el.value='');
+  document.getElementById('custDate').value=new Date().toISOString().split('T')[0];
+  document.querySelectorAll('.ri.sel').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.ci.chk').forEach(el=>el.classList.remove('chk'));
+  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el=>el.checked=false);
+  document.querySelectorAll('.cl-item.done').forEach(el=>el.classList.remove('done'));
+  document.querySelectorAll('.cond.show,.cond-grid.show').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.other-wrap.show').forEach(el=>el.classList.remove('show'));
+  document.getElementById('circuitBlocks').innerHTML='<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
+  circuitCount=0;
+  document.getElementById('stringBlocks').innerHTML='';
+  stringCount=0;
   updateProgress();
-  updateFormProgress();
 }
 
 updateProgress();
-updateFormProgress();
 </script>
 </body>
 </html>
