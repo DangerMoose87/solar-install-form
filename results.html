@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solar Install — Job Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+:root{--bg:#f4f3ef;--surface:#fff;--surface2:#f9f8f5;--border:rgba(0,0,0,.10);--border-s:rgba(0,0,0,.18);--text:#1a1a18;--muted:#6b6b66;--faint:#a0a09a;--accent:#2a6b3c;--accent-bg:#e8f5ed;--accent-bd:#a8d4b5;--accent-t:#1d5230;--danger:#8b1f1f;--danger-bg:#fdeaea;--r:10px;--rs:6px;--shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2.5rem;width:100%;max-width:380px;box-shadow:var(--shadow);text-align:center;}
+.login-logo{width:48px;height:48px;background:var(--accent);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;margin:0 auto 1.25rem;}
+.login-card h1{font-size:20px;font-weight:600;margin-bottom:.4rem;}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+.login-card input{border:1px solid var(--border-s);border-radius:var(--rs);padding:10px 13px;font-size:15px;background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;margin-bottom:12px;transition:border-color .15s,box-shadow .15s;}
+.login-card input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,107,60,.12);}
+.login-card .err{font-size:13px;color:var(--danger);margin-bottom:10px;display:none;}
+.login-card .err.show{display:block;}
+
+/* App */
+.app{display:none;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.logo{width:36px;height:36px;background:var(--accent);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;}
+header p{font-size:12px;color:var(--muted);margin-top:1px;}
+.hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.hlink{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border-s);border-radius:var(--rs);padding:6px 12px;display:flex;align-items:center;gap:6px;transition:all .15s;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.hlink:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-t);}
+.container{max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
+.toolbar{display:flex;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--faint);}
+.search-wrap input{border:1px solid var(--border-s);border-radius:var(--rs);padding:8px 11px 8px 34px;font-size:14px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;}
+.search-wrap input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,107,60,.12);}
+.filter-select{border:1px solid var(--border-s);border-radius:var(--rs);padding:8px 11px;font-size:14px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;-webkit-appearance:none;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface2);}
+th{padding:11px 16px;font-size:12px;font-weight:600;color:var(--muted);text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+th:hover{color:var(--text);}
+th .sort-icon{font-size:11px;margin-left:4px;opacity:.4;}
+th.sorted .sort-icon{opacity:1;color:var(--accent);}
+td{padding:13px 16px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tbody tr{cursor:pointer;transition:background .12s;}
+tbody tr:hover{background:var(--accent-bg);}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--accent-bg);color:var(--accent-t);border:1px solid var(--accent-bd);}
+.empty-row td{text-align:center;padding:3rem;color:var(--faint);font-style:italic;}
+.loading{text-align:center;padding:3rem;color:var(--muted);}
+.loading i{font-size:24px;display:block;margin-bottom:8px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.25rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:.9rem 1.1rem;box-shadow:var(--shadow);}
+.stat p{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.stat strong{font-size:22px;font-weight:600;letter-spacing:-.02em;}
+
+/* Change password modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border-radius:var(--r);padding:2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:.4rem;}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:1.25rem;}
+.modal input{border:1px solid var(--border-s);border-radius:var(--rs);padding:9px 12px;font-size:14px;background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;margin-bottom:10px;}
+.modal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,107,60,.12);}
+.modal-btns{display:flex;gap:8px;margin-top:.5rem;}
+.modal .err{font-size:13px;color:var(--danger);margin-bottom:8px;display:none;}
+.modal .err.show{display:block;}
+
+.btn-p{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;transition:opacity .15s;}
+.btn-p:hover{opacity:.88;}
+.btn-s{background:var(--surface);color:var(--muted);border:1px solid var(--border-s);border-radius:var(--rs);padding:10px 18px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-s:hover{background:var(--surface2);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:11px 20px;border-radius:var(--rs);font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .3s,bottom .3s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999;}
+.toast.show{opacity:1;bottom:28px;}
+.toast.success{background:var(--accent);}
+.toast.error{background:var(--danger);}
+
+@media(max-width:600px){.container{padding:1rem;}header{padding:1rem 1.25rem;}.stats{grid-template-columns:1fr 1fr;}th,td{padding:10px 12px;}}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
+    <h1>Job results</h1>
+    <p>Enter the password to view completed install records</p>
+    <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <div class="err" id="pwErr">Incorrect password — please try again</div>
+    <button class="btn-p" style="width:100%;justify-content:center;" onclick="checkPw()"><i class="ti ti-lock-open" aria-hidden="true"></i> Sign in</button>
+  </div>
+</div>
+
+<!-- App -->
+<div class="app" id="appWrap">
+  <header>
+    <div class="logo"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
+    <div><h1>Job results</h1><p>All completed solar install records</p></div>
+    <div class="hright">
+      <a href="index.html" class="hlink"><i class="ti ti-plus" aria-hidden="true"></i> New form</a>
+      <button class="hlink" onclick="showChangePw()"><i class="ti ti-lock" aria-hidden="true"></i> Change password</button>
+      <button class="hlink" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Sign out</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><p>Total jobs</p><strong id="statTotal">—</strong></div>
+      <div class="stat"><p>This month</p><strong id="statMonth">—</strong></div>
+      <div class="stat"><p>Most recent</p><strong id="statRecent" style="font-size:14px;margin-top:4px;">—</strong></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="searchInput" placeholder="Search by job, customer or address…" oninput="renderTable()"/></div>
+      <select class="filter-select" id="sortSelect" onchange="renderTable()">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="job-asc">Job number A–Z</option>
+        <option value="customer-asc">Customer A–Z</option>
+      </select>
+      <button class="hlink" onclick="loadJobs()" title="Refresh"><i class="ti ti-refresh" aria-hidden="true"></i></button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="setSort('job-asc')">Job <span class="sort-icon ti ti-selector"></span></th>
+            <th onclick="setSort('customer-asc')">Customer <span class="sort-icon ti ti-selector"></span></th>
+            <th>Address</th>
+            <th onclick="setSort('date-desc')">Install date <span class="sort-icon ti ti-selector"></span></th>
+            <th>Installer</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" class="loading"><i class="ti ti-loader" aria-hidden="true"></i>Loading jobs…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Change password modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Change password</h2>
+    <p>Enter your current password, then choose a new one.</p>
+    <div class="err" id="modalErr"></div>
+    <input type="password" id="currentPw" placeholder="Current password"/>
+    <input type="password" id="newPw" placeholder="New password"/>
+    <input type="password" id="confirmPw" placeholder="Confirm new password"/>
+    <div class="modal-btns">
+      <button class="btn-s" onclick="hideChangePw()">Cancel</button>
+      <button class="btn-p" onclick="changePw()"><i class="ti ti-check" aria-hidden="true"></i> Update password</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
+const DEFAULT_HASH='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+
+function getStoredHash(){return localStorage.getItem('solarPwHash')||DEFAULT_HASH;}
+
+async function checkPw(){
+  const pw=document.getElementById('pwInput').value;
+  if(!pw)return;
+  const hash=await sha256(pw);
+  if(hash===getStoredHash()){
+    sessionStorage.setItem('solarAuth','1');
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('appWrap').style.display='block';
+    loadJobs();
+  }else{
+    document.getElementById('pwErr').classList.add('show');
+    document.getElementById('pwInput').value='';
+  }
+}
+
+function logout(){sessionStorage.removeItem('solarAuth');location.reload();}
+
+if(sessionStorage.getItem('solarAuth')==='1'){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('appWrap').style.display='block';
+}
+
+let allJobs=[];
+let currentSort='date-desc';
+
+async function loadJobs(){
+  document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="loading"><i class="ti ti-loader" aria-hidden="true"></i> Loading jobs…</td></tr>';
+  try{
+    const res=await fetch(SCRIPT_URL+'?action=list');
+    const data=await res.json();
+    if(data.result==='success'){
+      allJobs=data.jobs||[];
+      updateStats();
+      renderTable();
+    }else{
+      document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty-row">No jobs found</td></tr>';
+    }
+  }catch(e){
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="5" class="empty-row">Could not load jobs — check connection</td></tr>';
+  }
+}
+
+function updateStats(){
+  document.getElementById('statTotal').textContent=allJobs.length;
+  const now=new Date();
+  const thisMonth=allJobs.filter(j=>{const d=new Date(j.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).length;
+  document.getElementById('statMonth').textContent=thisMonth;
+  if(allJobs.length>0){
+    const sorted=[...allJobs].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    document.getElementById('statRecent').textContent=sorted[0].customer||'—';
+  }
+}
+
+function setSort(val){currentSort=val;document.getElementById('sortSelect').value=val;renderTable();}
+
+function renderTable(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const sort=document.getElementById('sortSelect').value;
+  currentSort=sort;
+  let jobs=[...allJobs];
+  if(q){jobs=jobs.filter(j=>(j.jobNumber||'').toLowerCase().includes(q)||(j.customer||'').toLowerCase().includes(q)||(j.address||'').toLowerCase().includes(q));}
+  jobs.sort((a,b)=>{
+    if(sort==='date-desc')return new Date(b.date)-new Date(a.date);
+    if(sort==='date-asc')return new Date(a.date)-new Date(b.date);
+    if(sort==='job-asc')return(a.jobNumber||'').localeCompare(b.jobNumber||'');
+    if(sort==='customer-asc')return(a.customer||'').localeCompare(b.customer||'');
+    return 0;
+  });
+  const tbody=document.getElementById('tableBody');
+  if(jobs.length===0){tbody.innerHTML='<tr><td colspan="5" class="empty-row">No matching jobs found</td></tr>';return;}
+  tbody.innerHTML=jobs.map(j=>`<tr onclick="openJob('${j.jobNumber}')">
+    <td><span class="badge">${j.jobNumber||''}</span></td>
+    <td>${j.customer||'—'}</td>
+    <td>${j.address||'—'}</td>
+    <td>${j.date?new Date(j.date).toLocaleDateString('en-GB'):'—'}</td>
+    <td>${j.installer||'—'}</td>
+  </tr>`).join('');
+}
+
+function openJob(jobNum){
+  window.location.href='report.html?job='+encodeURIComponent(jobNum);
+}
+
+function showChangePw(){document.getElementById('modalOverlay').classList.add('show');}
+function hideChangePw(){document.getElementById('modalOverlay').classList.remove('show');document.getElementById('currentPw').value='';document.getElementById('newPw').value='';document.getElementById('confirmPw').value='';document.getElementById('modalErr').classList.remove('show');}
+
+async function changePw(){
+  const current=document.getElementById('currentPw').value;
+  const newP=document.getElementById('newPw').value;
+  const confirm=document.getElementById('confirmPw').value;
+  const errEl=document.getElementById('modalErr');
+  errEl.classList.remove('show');
+  if(!current||!newP||!confirm){errEl.textContent='Please fill in all fields.';errEl.classList.add('show');return;}
+  const currentHash=await sha256(current);
+  if(currentHash!==getStoredHash()){errEl.textContent='Current password is incorrect.';errEl.classList.add('show');return;}
+  if(newP!==confirm){errEl.textContent='New passwords do not match.';errEl.classList.add('show');return;}
+  if(newP.length<6){errEl.textContent='New password must be at least 6 characters.';errEl.classList.add('show');return;}
+  const newHash=await sha256(newP);
+  localStorage.setItem('solarPwHash',newHash);
+  hideChangePw();
+  showToast('Password updated successfully','success');
+}
+
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');setTimeout(()=>{t.className='toast';},3500);}
+
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw();});
+
+if(sessionStorage.getItem('solarAuth')==='1') loadJobs();
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solar Install — Job Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+:root{--bg:#f4f3ef;--surface:#fff;--surface2:#f9f8f5;--border:rgba(0,0,0,.10);--border-s:rgba(0,0,0,.18);--text:#1a1a18;--muted:#6b6b66;--faint:#a0a09a;--accent:#2a6b3c;--accent-bg:#e8f5ed;--accent-bd:#a8d4b5;--accent-t:#1d5230;--warn:#7a4f00;--warn-bg:#fef3e0;--warn-bd:#f0c97a;--danger:#8b1f1f;--danger-bg:#fdeaea;--r:10px;--rs:6px;--shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:4rem;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.logo{width:36px;height:36px;background:var(--accent);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+header h1{font-size:16px;font-weight:600;letter-spacing:-.01em;}
+header p{font-size:12px;color:var(--muted);margin-top:1px;}
+.hright{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.hlink{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border-s);border-radius:var(--rs);padding:6px 12px;display:flex;align-items:center;gap:6px;transition:all .15s;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.hlink:hover{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-t);}
+.container{max-width:760px;margin:0 auto;padding:2rem 1.5rem;}
+.loading{text-align:center;padding:5rem;color:var(--muted);}
+.loading i{font-size:32px;display:block;margin-bottom:12px;}
+
+/* Report */
+.job-header{background:var(--accent);color:#fff;border-radius:var(--r);padding:1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:16px;}
+.job-header .job-num{font-size:28px;font-weight:600;letter-spacing:-.02em;}
+.job-header .job-meta{font-size:13px;opacity:.8;margin-top:2px;}
+
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow);}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.sn{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--accent-t);flex-shrink:0;}
+.st{font-size:15px;font-weight:600;letter-spacing:-.01em;}
+.si{font-size:18px;color:var(--muted);}
+.fg{display:grid;gap:12px;}
+.fg2{grid-template-columns:1fr 1fr;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.full{grid-column:1/-1;}
+.field{display:flex;flex-direction:column;gap:3px;}
+.field .lbl{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;}
+.field .val{font-size:14px;color:var(--text);padding:7px 10px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);}
+.field .val.empty{color:var(--faint);font-style:italic;}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--accent-bg);color:var(--accent-t);border:1px solid var(--accent-bd);}
+.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-bd);}
+.dv{height:1px;background:var(--border);margin:1rem 0;}
+.sub{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+.dyn-block{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:1rem;margin-bottom:10px;}
+.dyn-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+
+/* Checklist read-only */
+.cl-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;background:var(--surface2);}
+.cl-item.done{background:var(--accent-bg);border-color:var(--accent-bd);}
+.cl-item.fail{background:var(--danger-bg);border-color:rgba(139,31,31,.3);}
+.cl-item:last-child{margin-bottom:0;}
+.cb-box{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.cl-item.done .cb-box{background:var(--accent);color:#fff;}
+.cl-item.fail .cb-box{background:var(--danger-bg);color:var(--danger);}
+.cl-label{font-size:14px;}
+.cl-item.done .cl-label{color:var(--accent-t);font-weight:500;}
+.cl-item.fail .cl-label{color:var(--danger);}
+
+@media print{header{display:none;}.hright{display:none;}body{background:#fff;}.sc{box-shadow:none;break-inside:avoid;}}
+@media(max-width:600px){.container{padding:1rem;}header{padding:1rem 1.25rem;}.fg2,.fg3{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><i class="ti ti-solar-panel" aria-hidden="true"></i></div>
+  <div><h1 id="headerTitle">Job report</h1><p id="headerSub">Loading…</p></div>
+  <div class="hright">
+    <a href="results.html" class="hlink"><i class="ti ti-arrow-left" aria-hidden="true"></i> All jobs</a>
+    <button class="hlink" onclick="window.print()"><i class="ti ti-printer" aria-hidden="true"></i> Print</button>
+  </div>
+</header>
+
+<div class="container" id="container">
+  <div class="loading"><i class="ti ti-loader" aria-hidden="true"></i>Loading job data…</div>
+</div>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-ybiYcWcroMccULmjcNBhuXDNdfC2QND-rX6j01a9ehTLvhjAExrp/exec';
+
+if(sessionStorage.getItem('solarAuth')!=='1'){window.location.href='results.html';}
+
+const params=new URLSearchParams(window.location.search);
+const jobNum=params.get('job');
+
+function v(val){return val&&val.trim()!==''?val:'—';}
+function field(label,val){return`<div class="field"><span class="lbl">${label}</span><span class="val${(!val||val.trim()===''||val==='—')?' empty':''}">${v(val)}</span></div>`;}
+function badge(val){return val?`<span class="badge">${val}</span>`:'<span class="val empty">—</span>';}
+
+async function loadJob(){
+  if(!jobNum){document.getElementById('container').innerHTML='<div class="loading">No job number specified.</div>';return;}
+  try{
+    const res=await fetch(SCRIPT_URL+'?action=get&job='+encodeURIComponent(jobNum));
+    const data=await res.json();
+    if(data.result==='success'){renderJob(data.data);}
+    else{document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Job not found.</div>';}
+  }catch(e){
+    document.getElementById('container').innerHTML='<div class="loading"><i class="ti ti-alert-circle" aria-hidden="true"></i>Could not load job data.</div>';
+  }
+}
+
+function renderJob(d){
+  document.getElementById('headerTitle').textContent=jobNum;
+  document.getElementById('headerSub').textContent=(d['Customer Name']||'Unknown customer')+' — '+(d['Address']||'');
+
+  let circuits=[];
+  let strings=[];
+  try{circuits=JSON.parse(d['Circuits JSON']||'[]');}catch(e){}
+  try{strings=JSON.parse(d['Strings JSON']||'[]');}catch(e){}
+
+  const circuitsHtml=circuits.length===0?'<p style="font-size:13px;color:var(--faint);font-style:italic;">No circuits recorded</p>':circuits.map(c=>`
+    <div class="dyn-block">
+      <div class="dyn-title"><i class="ti ti-circuit-cell" aria-hidden="true"></i> Circuit ${c.circuit}</div>
+      <div class="fg fg3" style="margin-bottom:10px;">
+        ${field('Circuit type',c.type)}
+        ${field('Type of wiring',c.wiring)}
+        ${field('Points served',c.points)}
+      </div>
+      <div class="dv"></div><div class="sub">Conductor size</div>
+      <div class="fg fg2" style="margin-bottom:10px;">
+        ${field('Live (mm²)',c.live)}
+        ${field('CPC (mm²)',c.cpc)}
+      </div>
+      <div class="dv"></div><div class="sub">Overcurrent protective device</div>
+      <div class="fg fg2" style="margin-bottom:10px;">
+        ${field('Device type',c.opdType)}
+        ${field('Characteristic',c.opdChar)}
+        ${field('Rating (A)',c.opdRating)}
+        ${field('Breaking capacity',c.breakCap)}
+      </div>
+      <div class="dv"></div><div class="sub">RCD</div>
+      <div class="fg fg2" style="margin-bottom:10px;">
+        ${field('RCD type',c.rcdType)}
+        ${field('Operating current',c.rcdCurrent)}
+        ${field('Rating (A)',c.rcdRating)}
+      </div>
+      <div class="dv"></div><div class="sub">Test results</div>
+      <div class="fg fg3">
+        ${field('R1+R2 (Ω)',c.r1r2)}
+        ${field('Zs (Ω)',c.zs)}
+        ${field('RCD disconnect time (ms)',c.zsDisconnect)}
+      </div>
+    </div>`).join('');
+
+  const stringsHtml=strings.length===0?'<p style="font-size:13px;color:var(--faint);font-style:italic;">No strings recorded</p>':strings.map(s=>`
+    <div class="dyn-block">
+      <div class="dyn-title"><i class="ti ti-sun" aria-hidden="true"></i> String ${s.string}</div>
+      <div class="fg fg2">
+        ${field('Voc STC (V)',s.voc)}
+        ${field('DC cable size',s.cable)}
+        ${field('Polarity check',s.polarity)}
+        ${field('Isolator location',s.isolator)}
+      </div>
+    </div>`).join('');
+
+  function clItem(label,val){
+    const done=val==='Yes';
+    return`<div class="cl-item ${done?'done':'fail'}">
+      <div class="cb-box"><i class="ti ti-${done?'check':'x'}" aria-hidden="true"></i></div>
+      <span class="cl-label">${label}</span>
+    </div>`;}
+
+  const instDate=d['Date']?new Date(d['Date']).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—';
+
+  document.getElementById('container').innerHTML=`
+    <div class="job-header">
+      <div>
+        <div class="job-num">${jobNum}</div>
+        <div class="job-meta">${d['Customer Name']||''} &bull; ${instDate}</div>
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">1</span><i class="ti ti-user si" aria-hidden="true"></i><span class="st">Customer details</span></div>
+      <div class="fg fg2">
+        ${field('Customer name',d['Customer Name'])}
+        ${field('Date',instDate)}
+        <div class="field full"><span class="lbl">Address</span><span class="val">${v(d['Address'])}</span></div>
+        ${field('Post code',d['Post Code'])}
+        ${field('Installer name',d['Installer Name'])}
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">2</span><i class="ti ti-bolt si" aria-hidden="true"></i><span class="st">Supply characteristics</span></div>
+      <div class="fg fg2">
+        ${field('Supply type',d['Supply Type'])}
+        ${field('BS 1361 fuse rating',d['Fuse Rating'])}
+        ${field('Ze (Ω)',d['Ze'])}
+        ${field('PFC (kA)',d['PFC'])}
+        ${field('Main switch location',d['Switch Location'])}
+        ${field('Switch type',d['Switch Type'])}
+        ${field('Switch rating',d['Switch Rating'])}
+        ${field('Number of poles',d['Num Poles'])}
+        ${field('Supply conductor',d['Supply Conductor'])}
+        ${field('Earth conductor',d['Earth Conductor'])}
+        ${field('Earth continuity verified',d['Earth Continuity'])}
+        ${field('Bonding',d['Bonding'])}
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">3</span><i class="ti ti-server si" aria-hidden="true"></i><span class="st">DB / gateway details</span></div>
+      <div class="fg fg2">
+        ${field('Type',d['DB Type'])}
+        ${field('Location',d['DB Location'])}
+        ${d['DB Type']==='DB'?field('EMLite serial number',d['EMLite Serial']):''}
+        ${field('Number of ways',d['Num Ways'])}
+        ${field('SPD status',d['SPD Status'])}
+        ${field('SPD type',d['SPD Type'])}
+        ${field('Correct polarity',d['Correct Polarity'])}
+        ${field('Connected to origin',d['Connected to Origin'])}
+        ${field('Number of circuits',d['Num Circuits'])}
+      </div>
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">4</span><i class="ti ti-circuit-cell si" aria-hidden="true"></i><span class="st">Circuit details</span></div>
+      ${circuitsHtml}
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">5</span><i class="ti ti-solar-panel si" aria-hidden="true"></i><span class="st">PV details</span></div>
+      <div class="fg fg2" style="margin-bottom:1rem;">${field('Number of strings',d['Num Strings'])}</div>
+      ${stringsHtml}
+    </div>
+
+    <div class="sc">
+      <div class="sh"><span class="sn">6</span><i class="ti ti-clipboard-check si" aria-hidden="true"></i><span class="st">Install checklist</span></div>
+      ${clItem('Grid setting set to G99 during commissioning',d['Checklist G99'])}
+      ${clItem('Electricity rates and currency set during commissioning',d['Checklist Rates'])}
+      ${clItem('Warning stickers applied',d['Checklist Stickers'])}
+      ${clItem('Customer given quick walkthrough of app',d['Checklist Walkthrough'])}
+    </div>`;
+}
+
+loadJob();
+</script>
+</body>
+</html>

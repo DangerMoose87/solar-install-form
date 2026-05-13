@@ -430,18 +430,24 @@
       <span class="section-title">Supply characteristics</span>
     </div>
     <div class="fg fg2">
-      <div class="f"><label>Supply type</label><div class="rg" id="supplyType"><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-C"/>TN-C</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-S"/>TN-S</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TN-C-S"/>TN-C-S</label><label class="ri" onclick="rb(this,'supplyType')"><input type="radio" name="supplyType" value="TT"/>TT</label></div></div>
-      <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="fuseRating"><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Supply type</label><div class="rg" id="supplyType"><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-C"/>TN-C</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-S"/>TN-S</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(false)"><input type="radio" name="supplyType" value="TN-C-S"/>TN-C-S</label><label class="ri" onclick="rb(this,'supplyType');toggleTT(true)"><input type="radio" name="supplyType" value="TT"/>TT</label></div></div>
+      <div class="cf full" id="ttFields">
+        <div class="fg fg2" style="margin-top:0;">
+          <div class="f"><label>Earth stake location</label><input type="text" id="earthStakeLoc" placeholder=""/></div>
+          <div class="f"><label>Resistance to earth (Ω)</label><input type="number" step="0.01" id="resistanceToEarth" placeholder=""/></div>
+        </div>
+      </div>
+      <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="fuseRating"><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'fuseRating')"><input type="radio" name="fuseRating" value="Other"/>Other</label></div><div class="other-input" id="other-fuseRating"><input type="text" placeholder="Please specify…"/></div></div>
       <div class="f"><label>Ze (Ω)</label><input type="number" step="0.001" id="ze" placeholder="0.000"/></div>
       <div class="f"><label>PFC (kA)</label><input type="number" step="0.01" id="pfc" placeholder="0.00"/></div>
       <div class="f"><label>Main switch location</label><input type="text" id="switchLoc" placeholder="e.g. Meter cupboard"/></div>
-      <div class="f"><label>Switch type</label><div class="rg" id="switchType"><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Main Switch"/>Main switch</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="RCD"/>RCD</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Other"/>Other</label></div></div>
-      <div class="f"><label>Switch rating</label><div class="rg" id="switchRating"><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="Other"/>Other</label></div></div>
-      <div class="f"><label>Number of poles</label><input type="number" id="numPoles" placeholder="e.g. 1"/></div>
-      <div class="f"><label>Supply conductor size</label><div class="rg" id="supplyCond"><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="Other"/>Other</label></div></div>
-      <div class="f"><label>Earth conductor size</label><div class="rg" id="earthCond"><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Switch type</label><div class="rg" id="switchType"><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Main Switch"/>Main switch</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="RCD"/>RCD</label><label class="ri" onclick="rb(this,'switchType')"><input type="radio" name="switchType" value="Other"/>Other</label></div><div class="other-input" id="other-switchType"><input type="text" placeholder="Please specify…"/></div></div>
+      <div class="f"><label>Switch rating</label><div class="rg" id="switchRating"><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="63A"/>63A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="80A"/>80A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="100A"/>100A</label><label class="ri" onclick="rb(this,'switchRating')"><input type="radio" name="switchRating" value="Other"/>Other</label></div><div class="other-input" id="other-switchRating"><input type="text" placeholder="Please specify…"/></div></div>
+      <div class="f"><label>Number of poles</label><div class="rg" id="numPoles"><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="1"/>1</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="2"/>2</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="3"/>3</label><label class="ri" onclick="rb(this,'numPoles')"><input type="radio" name="numPoles" value="4"/>4</label></div></div>
+      <div class="f"><label>Supply conductor size</label><div class="rg" id="supplyCond"><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="25mm"/>25mm²</label><label class="ri" onclick="rb(this,'supplyCond')"><input type="radio" name="supplyCond" value="Other"/>Other</label></div><div class="other-input" id="other-supplyCond"><input type="text" placeholder="Please specify…"/></div></div>
+      <div class="f"><label>Earth conductor size</label><div class="rg" id="earthCond"><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="10mm"/>10mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="16mm"/>16mm²</label><label class="ri" onclick="rb(this,'earthCond')"><input type="radio" name="earthCond" value="Other"/>Other</label></div><div class="other-input" id="other-earthCond"><input type="text" placeholder="Please specify…"/></div></div>
       <div class="f"><label>Earth continuity verified</label><div class="rg" id="earthCont"><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'earthCont')"><input type="radio" name="earthCont" value="N/A"/>N/A</label></div></div>
-      <div class="f"><label>Bonding</label><div class="cg"><label class="ci" onclick="cb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
+      <div class="f"><label>Bonding</label><div class="cg" id="bondingGroup"><label class="ci" onclick="cb(this)"><input type="checkbox" value="Water"/>Water</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Gas"/>Gas</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Oil"/>Oil</label><label class="ci" onclick="cb(this)"><input type="checkbox" value="Other"/>Other</label></div></div>
     </div>
   </div>
 
@@ -469,12 +475,12 @@
           </div>
         </div>
       </div>
-      <div class="f"><label>Number of ways</label><input type="number" id="dbWays" placeholder="e.g. 12"/></div>
-      <div class="f"><label>SPD status</label><div class="rg" id="spdStatus"><label class="ri" onclick="rb(this,'spdStatus')"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'spdStatus')"><input type="radio" name="spdStatus" value="N/A"/>N/A</label></div></div>
-      <div class="f"><label>SPD type</label><div class="rg" id="spdType"><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T1"/>T1</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T2"/>T2</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T3"/>T3</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="N/A"/>N/A</label></div></div>
+      <div class="f"><label>Number of ways</label><input type="number" id="dbWays" placeholder=""/></div>
+      <div class="f"><label>SPD installed?</label><div class="rg" id="spdStatus"><label class="ri" onclick="rb(this,'spdStatus');toggleSPD('Yes')"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'spdStatus');toggleSPD('No')"><input type="radio" name="spdStatus" value="No"/>No</label></div></div>
+      <div class="cf" id="spdTypeField" style="grid-column:1/-1"><div class="f"><label>SPD type</label><div class="rg" id="spdType"><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T1"/>T1</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T2"/>T2</label><label class="ri" onclick="rb(this,'spdType')"><input type="radio" name="spdType" value="T3"/>T3</label></div></div></div>
       <div class="f"><label>Correct polarity</label><div class="rg" id="dbPolarity"><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbPolarity')"><input type="radio" name="dbPolarity" value="No"/>No</label></div></div>
       <div class="f"><label>Directly connected to origin</label><div class="rg" id="dbOrigin"><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,'dbOrigin')"><input type="radio" name="dbOrigin" value="No"/>No</label></div></div>
-      <div class="f"><label>How many circuits?</label><input type="number" id="dbCircuits" min="1" max="20" placeholder="e.g. 4" oninput="updateCircuits(this.value)"/></div>
+      <div class="f"><label>How many circuits?</label><input type="number" id="dbCircuits" min="1" max="20" placeholder="" oninput="updateCircuits(this.value)"/></div>
       <p class="hint full"><i class="ti ti-info-circle" style="font-size:13px" aria-hidden="true"></i> Section 4 populates automatically from this number</p>
     </div>
   </div>
@@ -497,7 +503,7 @@
       <span class="section-title">PV details</span>
     </div>
     <div class="fg fg2" style="margin-bottom:1rem;">
-      <div class="f"><label>Number of strings</label><input type="number" id="numStrings" min="1" max="20" placeholder="e.g. 2" oninput="updateStrings(this.value)"/></div>
+      <div class="f"><label>Number of strings</label><input type="number" id="numStrings" min="1" max="20" placeholder="" oninput="updateStrings(this.value)"/></div>
     </div>
     <div id="stringBlocks"></div>
   </div>
@@ -538,7 +544,7 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmit7cMWkb5z8-
 
 const HEADERS = [
   'Date','Customer Name','Address','Post Code','Installer Name',
-  'Supply Type','Fuse Rating','Ze (Ω)','PFC (kA)','Main Switch Location',
+  'Supply Type','Earth Stake Location','Resistance to Earth (Ω)','Fuse Rating','Ze (Ω)','PFC (kA)','Main Switch Location',
   'Switch Type','Switch Rating','Num Poles','Supply Conductor','Earth Conductor',
   'Earth Continuity','Bonding',
   'DB/Gateway Type','DB Location','EMLite Serial','Num Ways',
@@ -561,6 +567,11 @@ function rbLocal(el, gid, scope) {
   scope.querySelectorAll('#' + gid + ' .ri').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   el.querySelector('input').checked = true;
+  const oi = scope.querySelector('#other-' + gid);
+  if (oi) {
+    if (el.querySelector('input').value === 'Other') { oi.classList.add('vis'); }
+    else { oi.classList.remove('vis'); oi.querySelector('input').value = ''; }
+  }
 }
 
 function cb(el) {
@@ -575,6 +586,27 @@ function toggleEmlite(val) {
   } else {
     field.classList.remove('visible');
     document.getElementById('emliteSerial').value = '';
+  }
+}
+function toggleTT(show) {
+  const f = document.getElementById('ttFields');
+  if (show) {
+    f.classList.add('vis');
+  } else {
+    f.classList.remove('vis');
+    document.getElementById('earthStakeLoc').value = '';
+    document.getElementById('resistanceToEarth').value = '';
+  }
+}
+
+function toggleSPD(v) {
+  const f = document.getElementById('spdTypeField');
+  if (v === 'Yes') {
+    f.classList.add('vis');
+  } else {
+    f.classList.remove('vis');
+    document.querySelectorAll('#spdType .ri').forEach(o => o.classList.remove('sel'));
+    document.querySelectorAll('input[name="spdType"]').forEach(o => o.checked = false);
   }
 }
 
@@ -646,6 +678,22 @@ function rgField(labelText, name, options, scope) {
   d.appendChild(lbl); d.appendChild(makeRG(name, options, scope)); return d;
 }
 
+function mkRgFieldWithOther(labelText, name, options, scope) {
+  const d = document.createElement('div'); d.className = 'f';
+  const lbl = document.createElement('label'); lbl.textContent = labelText;
+  d.appendChild(lbl);
+  const rg = makeRG(name, options, scope);
+  d.appendChild(rg);
+  if (options.includes('Other')) {
+    const oi = document.createElement('div');
+    oi.className = 'other-input'; oi.id = 'other-' + name;
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.placeholder = 'Please specify…';
+    oi.appendChild(inp); d.appendChild(oi);
+  }
+  return d;
+}
+
 let circuitCount = 0;
 
 function buildCircuitBlock(id) {
@@ -661,8 +709,8 @@ function buildCircuitBlock(id) {
   title.appendChild(rm); block.appendChild(title);
 
   const g1 = document.createElement('div'); g1.className = 'fg fg3'; g1.style.marginBottom = '10px';
-  g1.appendChild(rgField('Circuit type', n + '_circType', ['Inverter', 'EV Charger', 'Other'], block));
-  g1.appendChild(rgField('Type of wiring', n + '_wiringType', ['PVC', 'SWA', 'H07', 'Other'], block));
+  g1.appendChild(mkRgFieldWithOther('Circuit type', n + '_circType', ['Inverter', 'EV Charger', 'Other'], block));
+  g1.appendChild(mkRgFieldWithOther('Type of wiring', n + '_wiringType', ['PVC', 'SWA', 'H07', 'Other'], block));
   const pts = inp('e.g. 1', 'number'); pts.min = '1';
   g1.appendChild(field('Number of points served', pts));
   block.appendChild(g1);
@@ -670,8 +718,8 @@ function buildCircuitBlock(id) {
   const dv1 = document.createElement('div'); dv1.className = 'divider'; block.appendChild(dv1);
   const sh1 = document.createElement('div'); sh1.className = 'sub-head'; sh1.textContent = 'Conductor size'; block.appendChild(sh1);
   const g2 = document.createElement('div'); g2.className = 'fg fg2'; g2.style.marginBottom = '10px';
-  g2.appendChild(field('Live (mm²)', inp('e.g. 6')));
-  g2.appendChild(field('CPC (mm²)', inp('e.g. 6')));
+  g2.appendChild(mkRgFieldWithOther('Live (mm²)',n+'_live',['1','1.5','2.5','4','6','10','16','25','Other'],block));
+  g2.appendChild(mkRgFieldWithOther('CPC (mm²)',n+'_cpc',['1','1.5','2.5','4','6','10','16','25','Other'],block));
   block.appendChild(g2);
 
   const dv2 = document.createElement('div'); dv2.className = 'divider'; block.appendChild(dv2);
@@ -689,15 +737,14 @@ function buildCircuitBlock(id) {
   g4.appendChild(rgField('RCD type', n + '_rcdType', ['A', 'AC', 'S', 'Other'], block));
   g4.appendChild(rgField('Operating current', n + '_rcdCurrent', ['10mA', '30mA', '100mA', 'Other'], block));
   g4.appendChild(rgField('Rating (A)', n + '_rcdRating', ['6', '16', '20', '32', '40', '63', '80'], block));
-  g4.appendChild(field('Disconnect time (ms)', inp('e.g. 18', 'number', '0.1')));
   block.appendChild(g4);
 
   const dv4 = document.createElement('div'); dv4.className = 'divider'; block.appendChild(dv4);
   const sh4 = document.createElement('div'); sh4.className = 'sub-head'; sh4.textContent = 'Test results'; block.appendChild(sh4);
   const g5 = document.createElement('div'); g5.className = 'fg fg3';
-  g5.appendChild(field('R1+R2 (Ω)', inp('0.000', 'number', '0.001')));
-  g5.appendChild(field('Zs (Ω)', inp('0.000', 'number', '0.001')));
-  g5.appendChild(field('RCD disconnect time (ms)', inp('e.g. 18', 'number', '0.1')));
+  g5.appendChild(field('R1+R2 (Ω)', inp('', 'number', '0.001')));
+  g5.appendChild(field('Zs (Ω)', inp('', 'number', '0.001')));
+  g5.appendChild(field('RCD disconnect time (ms)', inp('', 'number', '0.1')));
   block.appendChild(g5);
   return block;
 }
@@ -725,10 +772,10 @@ function updateStrings(val) {
     const div = document.createElement('div'); div.className = 'dyn-block'; div.id = 'str-' + sid;
     div.innerHTML = '<div class="dyn-title"><i class="ti ti-sun" aria-hidden="true"></i> String ' + sid + '<button class="rm-btn" onclick="this.closest(\'.dyn-block\').remove()"><i class="ti ti-x" aria-hidden="true"></i> Remove</button></div>'
       + '<div class="fg fg2">'
-      + '<div class="f"><label>Voc STC (V)</label><input type="number" step="0.1" placeholder="e.g. 42.5"/></div>'
+      + '<div class="f"><label>Voc STC (V)</label><input type="number" step="0.1" placeholder=""/></div>'
       + '<div class="f"><label>DC cable size</label><div class="rg" id="dcCable-' + sid + '"><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="4mm"/>4mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="6mm"/>6mm²</label><label class="ri" onclick="rb(this,\'dcCable-' + sid + '\')"><input type="radio" name="dcCable-' + sid + '" value="Other"/>Other</label></div></div>'
       + '<div class="f"><label>Polarity check</label><div class="rg" id="polarity-' + sid + '"><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="Yes"/>Yes</label><label class="ri" onclick="rb(this,\'polarity-' + sid + '\')"><input type="radio" name="polarity-' + sid + '" value="No"/>No</label></div></div>'
-      + '<div class="f"><label>Isolator location</label><input type="text" placeholder="e.g. Roof-mounted, adjacent to panels"/></div>'
+      + '<div class="f"><label>Isolator location</label><input type="text" placeholder=""/></div>'
       + '</div>';
     container.appendChild(div);
   }
@@ -737,24 +784,35 @@ function updateStrings(val) {
 
 function collectCircuitData() {
   const blocks = document.querySelectorAll('#circuitBlocks .dyn-block');
-  return Array.from(blocks).map((b, i) => {
-    const inputs = b.querySelectorAll('input[type="text"], input[type="number"]');
-    const radios = b.querySelectorAll('input[type="radio"]:checked');
-    const radioVals = Array.from(radios).map(r => r.name.split('_').slice(1).join('_') + ':' + r.value).join('; ');
-    const inputVals = Array.from(inputs).map(inp => inp.value).filter(Boolean).join(', ');
-    return 'Circuit ' + (i + 1) + ' [' + radioVals + (inputVals ? ' | ' + inputVals : '') + ']';
-  }).join(' || ');
+  const circuits = Array.from(blocks).map((b, i) => {
+    const n = 'c' + (i + 1);
+    const gr = name => getRbInScope(name, b);
+    const ins = Array.from(b.querySelectorAll('input[type="text"], input[type="number"]')).map(e => e.value);
+    return {
+      circuit: i + 1,
+      type: gr(n + '_circType'), wiring: gr(n + '_wiringType'), points: ins[0] || '',
+      live: gr(n + '_live'), cpc: gr(n + '_cpc'),
+      opdType: gr(n + '_opdType'), opdChar: gr(n + '_opdChar'), opdRating: gr(n + '_opdRating'), breakCap: gr(n + '_breakCap'),
+      rcdType: gr(n + '_rcdType'), rcdCurrent: gr(n + '_rcdCurrent'), rcdRating: gr(n + '_rcdRating'),
+      r1r2: ins[1] || '', zs: ins[2] || '', zsDisconnect: ins[3] || ''
+    };
+  });
+  return JSON.stringify(circuits);
 }
 
 function collectStringData() {
   const blocks = document.querySelectorAll('#stringBlocks .dyn-block');
-  return Array.from(blocks).map((b, i) => {
+  const strings = Array.from(blocks).map((b, i) => {
+    const sid = i + 1;
     const voc = b.querySelector('input[type="number"]');
-    const cable = b.querySelector('input[type="radio"][name^="dcCable"]:checked');
+    const cableEl = b.querySelector('input[type="radio"][name^="dcCable"]:checked');
+    const cable = cableEl ? (cableEl.value==='Other' ? (b.querySelector('#other-dcCable-'+sid+' input')||{value:''}).value||'Other' : cableEl.value) : '';
     const polarity = b.querySelector('input[type="radio"][name^="polarity"]:checked');
-    const isoLoc = b.querySelector('input[type="text"]');
-    return 'String ' + (i + 1) + ' [Voc:' + (voc ? voc.value : '') + ', Cable:' + (cable ? cable.value : '') + ', Polarity:' + (polarity ? polarity.value : '') + ', Isolator:' + (isoLoc ? isoLoc.value : '') + ']';
-  }).join(' || ');
+    const inputs = Array.from(b.querySelectorAll('input[type="text"]'));
+    const isoLoc = inputs[inputs.length-1];
+    return { string: sid, voc: voc ? voc.value : '', cable: cable, polarity: polarity ? polarity.value : '', isolator: isoLoc ? isoLoc.value : '' };
+  });
+  return JSON.stringify(strings);
 }
 
 function getChecklistVal(index) {
@@ -769,19 +827,180 @@ function showToast(msg, type) {
   setTimeout(() => { t.className = 'toast'; }, 4000);
 }
 
+function clearValidation() {
+  document.querySelectorAll('.field-invalid').forEach(el => {
+    el.classList.remove('field-invalid');
+    const msg = el.querySelector('.validation-msg');
+    if (msg) msg.remove();
+  });
+}
+
+function markInvalid(el, msg) {
+  el.classList.add('field-invalid');
+  if (!el.querySelector('.validation-msg')) {
+    const m = document.createElement('span');
+    m.className = 'validation-msg';
+    m.innerHTML = '<i class="ti ti-alert-circle" style="font-size:12px" aria-hidden="true"></i>' + msg;
+    el.appendChild(m);
+  }
+}
+
+function validateTextId(id, label, errors) {
+  const el = document.getElementById(id);
+  const wrapper = el ? el.closest('.f') : null;
+  if (!el || !el.value.trim()) {
+    if (wrapper) markInvalid(wrapper, label + ' is required');
+    errors.push(label);
+  }
+}
+
+function validateRb(name, label, errors) {
+  const checked = document.querySelector('input[name="' + name + '"]:checked');
+  const group = document.getElementById(name);
+  const wrapper = group ? group.closest('.f') : null;
+  if (!checked) {
+    if (wrapper) markInvalid(wrapper, label + ' is required');
+    errors.push(label);
+  }
+}
+
+function isVisible(id) {
+  const el = document.getElementById(id);
+  return el && (el.classList.contains('vis') || el.classList.contains('visible'));
+}
+
 async function submitForm() {
-  const name = getVal('custName');
-  const installer = getVal('installerName');
+  clearValidation();
+  const errors = [];
   const unchecked = document.querySelectorAll('#checklistItems .checklist-item:not(.done)').length;
 
-  if (!name || !installer) { showToast('Please fill in customer name and installer name', 'error'); return; }
+  // Section 1 — all mandatory
+  validateTextId('custName', 'Customer name', errors);
+  validateTextId('custDate', 'Date', errors);
+  validateTextId('custAddress', 'Address', errors);
+  validateTextId('custPostcode', 'Post code', errors);
+  validateTextId('installerName', 'Installer name', errors);
+
+  // Section 2 — all mandatory except bonding
+  validateRb('supplyType', 'Supply type', errors);
+  if (isVisible('ttFields')) {
+    validateTextId('earthStakeLoc', 'Earth stake location', errors);
+    validateTextId('resistanceToEarth', 'Resistance to earth', errors);
+  }
+  validateRb('fuseRating', 'Fuse rating', errors);
+  validateTextId('ze', 'Ze', errors);
+  validateTextId('pfc', 'PFC', errors);
+  validateTextId('switchLoc', 'Main switch location', errors);
+  validateRb('switchType', 'Switch type', errors);
+  validateRb('switchRating', 'Switch rating', errors);
+  validateRb('numPoles', 'Number of poles', errors);
+  validateRb('supplyCond', 'Supply conductor size', errors);
+  validateRb('earthCond', 'Earth conductor size', errors);
+  validateRb('earthCont', 'Earth continuity', errors);
+
+  // Section 3 — all mandatory (conditional fields only when visible)
+  validateRb('dbType', 'DB / gateway type', errors);
+  validateTextId('dbLocation', 'DB location', errors);
+  if (isVisible('emliteField')) {
+    validateTextId('emliteSerial', 'EMLite serial number', errors);
+  }
+  validateTextId('dbWays', 'Number of ways', errors);
+  validateRb('spdStatus', 'SPD installed', errors);
+  if (isVisible('spdTypeField')) {
+    validateRb('spdType', 'SPD type', errors);
+  }
+  validateRb('dbPolarity', 'Correct polarity', errors);
+  validateRb('dbOrigin', 'Connected to origin', errors);
+  validateTextId('dbCircuits', 'Number of circuits', errors);
+
+  // Section 4 — validate all circuit blocks
+  document.querySelectorAll('#circuitBlocks .dyn-block').forEach((block, i) => {
+    const num = i + 1;
+    const n = 'c' + num;
+    const fields = [
+      { name: n + '_circType', label: 'Circuit ' + num + ': Circuit type', type: 'rb' },
+      { name: n + '_wiringType', label: 'Circuit ' + num + ': Type of wiring', type: 'rb' },
+      { name: n + '_live', label: 'Circuit ' + num + ': Live conductor size', type: 'rb' },
+      { name: n + '_cpc', label: 'Circuit ' + num + ': CPC conductor size', type: 'rb' },
+      { name: n + '_opdType', label: 'Circuit ' + num + ': Device type', type: 'rb' },
+      { name: n + '_opdChar', label: 'Circuit ' + num + ': Characteristic', type: 'rb' },
+      { name: n + '_opdRating', label: 'Circuit ' + num + ': OPD rating', type: 'rb' },
+      { name: n + '_breakCap', label: 'Circuit ' + num + ': Breaking capacity', type: 'rb' },
+      { name: n + '_rcdType', label: 'Circuit ' + num + ': RCD type', type: 'rb' },
+      { name: n + '_rcdCurrent', label: 'Circuit ' + num + ': RCD operating current', type: 'rb' },
+      { name: n + '_rcdRating', label: 'Circuit ' + num + ': RCD rating', type: 'rb' },
+    ];
+    fields.forEach(f => {
+      const checked = block.querySelector('input[name="' + f.name + '"]:checked');
+      if (!checked) {
+        const group = block.querySelector('#' + f.name);
+        const wrapper = group ? group.closest('.f') : null;
+        if (wrapper) markInvalid(wrapper, f.label + ' is required');
+        errors.push(f.label);
+      }
+    });
+    // Text/number inputs: points served, r1r2, zs, rcd disconnect
+    const textInputs = Array.from(block.querySelectorAll('input[type="number"]:not([name]), input[type="text"]:not([placeholder="Please specify…"])'));
+    const textLabels = ['Points served', 'R1+R2', 'Zs', 'RCD disconnect time'];
+    textInputs.forEach((inp, idx) => {
+      if (!inp.value.trim()) {
+        const wrapper = inp.closest('.f');
+        const label = 'Circuit ' + num + ': ' + (textLabels[idx] || 'Field ' + (idx+1));
+        if (wrapper) markInvalid(wrapper, label + ' is required');
+        errors.push(label);
+      }
+    });
+  });
+
+  // Section 5 — validate all string blocks
+  document.querySelectorAll('#stringBlocks .dyn-block').forEach((block, i) => {
+    const num = i + 1;
+    // Voc number input
+    const voc = block.querySelector('input[type="number"]');
+    if (!voc || !voc.value.trim()) {
+      const wrapper = voc ? voc.closest('.f') : null;
+      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Voc STC is required');
+      errors.push('String ' + num + ': Voc STC');
+    }
+    // DC cable size radio
+    const cable = block.querySelector('input[name^="dcCable"]:checked');
+    if (!cable) {
+      const group = block.querySelector('[id^="dcCable"]');
+      const wrapper = group ? group.closest('.f') : null;
+      if (wrapper) markInvalid(wrapper, 'String ' + num + ': DC cable size is required');
+      errors.push('String ' + num + ': DC cable size');
+    }
+    // Polarity radio
+    const polarity = block.querySelector('input[name^="polarity"]:checked');
+    if (!polarity) {
+      const group = block.querySelector('[id^="polarity"]');
+      const wrapper = group ? group.closest('.f') : null;
+      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Polarity check is required');
+      errors.push('String ' + num + ': Polarity check');
+    }
+    // Isolator location text
+    const isoLoc = block.querySelector('input[type="text"]');
+    if (!isoLoc || !isoLoc.value.trim()) {
+      const wrapper = isoLoc ? isoLoc.closest('.f') : null;
+      if (wrapper) markInvalid(wrapper, 'String ' + num + ': Isolator location is required');
+      errors.push('String ' + num + ': Isolator location');
+    }
+  });
+
+  if (errors.length > 0) {
+    showToast(errors.length + ' required field' + (errors.length > 1 ? 's' : '') + ' missing — please check the form', 'error');
+    const first = document.querySelector('.field-invalid');
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   if (unchecked > 0) { showToast(unchecked + ' checklist item' + (unchecked > 1 ? 's' : '') + ' not yet completed', 'error'); return; }
 
   const values = [
     getVal('custDate'), name, getVal('custAddress'), getVal('custPostcode'), installer,
-    getRbVal('supplyType'), getRbVal('fuseRating'), getVal('ze'), getVal('pfc'), getVal('switchLoc'),
-    getRbVal('switchType'), getRbVal('switchRating'), getVal('numPoles'), getRbVal('supplyCond'), getRbVal('earthCond'),
-    getRbVal('earthCont'), getCbVals('bondingGroup') || document.querySelectorAll('.cg .ci.chk input') ? Array.from(document.querySelectorAll('.cg .ci.chk input')).map(i=>i.value).join(', ') : '',
+    getRbVal('supplyType'), getVal('earthStakeLoc'), getVal('resistanceToEarth'), getRbVal('fuseRating'), getVal('ze'), getVal('pfc'), getVal('switchLoc'),
+    getRbVal('switchType'), getRbVal('switchRating'), getRbVal('numPoles'), getRbVal('supplyCond'), getRbVal('earthCond'),
+    getRbVal('earthCont'), getCbVals('bondingGroup'),
     getRbVal('dbType'), getVal('dbLocation'), getVal('emliteSerial'), getVal('dbWays'),
     getRbVal('spdStatus'), getRbVal('spdType'), getRbVal('dbPolarity'), getRbVal('dbOrigin'), getVal('dbCircuits'),
     collectCircuitData(),
@@ -794,14 +1013,15 @@ async function submitForm() {
   btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Submitting...';
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ headers: HEADERS, values: values })
     });
-    showToast('Submitted successfully!', 'success');
-    setTimeout(() => clearForm(), 1500);
+    const data = await res.json();
+    const jobNum = data.jobNumber || 'Submitted';
+    showToast('Submitted successfully — job ' + jobNum, 'success');
+    clearForm();
   } catch (err) {
     showToast('Submission failed — check your connection', 'error');
   }
@@ -818,6 +1038,10 @@ function clearForm() {
   document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
   document.querySelectorAll('.checklist-item').forEach(el => el.classList.remove('done'));
   document.getElementById('emliteField').classList.remove('visible');
+  document.getElementById('spdTypeField').classList.remove('vis');
+  document.getElementById('ttFields').classList.remove('vis');
+  document.getElementById('earthStakeLoc').value='';
+  document.getElementById('resistanceToEarth').value='';
   document.getElementById('circuitBlocks').innerHTML = '<p class="empty-state">Enter the number of circuits in Section 3 to populate this section.</p>';
   circuitCount = 0;
   document.getElementById('stringBlocks').innerHTML = '';
