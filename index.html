@@ -384,12 +384,17 @@ function buildCircuitBlock(id){
   const dv4=document.createElement('div');dv4.className='dv';block.appendChild(dv4);
   const sh4=document.createElement('div');sh4.className='sub';sh4.textContent='Test results';block.appendChild(sh4);
   const g5=document.createElement('div');g5.className='fg fg3 test-results-grid';
-  g5.appendChild(makeInpField('R1+R2 (Ω)','number','0.001'));
-  g5.appendChild(makeInpField('Zs (Ω)','number','0.001'));
+  const r1r2F=makeInpField('R1+R2 (Ω)','number','0.001');
+  r1r2F.querySelector('input').setAttribute('data-field','r1r2');
+  g5.appendChild(r1r2F);
+  const zsF=makeInpField('Zs (Ω)','number','0.001');
+  zsF.querySelector('input').setAttribute('data-field','zs');
+  g5.appendChild(zsF);
   // RCD disconnect time — hidden unless RCD section visible
   const rcdDisconnectField=makeInpField('RCD disconnect time (ms)','number','0.1');
   rcdDisconnectField.classList.add('rcd-disconnect-field');
   rcdDisconnectField.style.display='none';
+  rcdDisconnectField.querySelector('input').setAttribute('data-field','rcdDisconnect');
   g5.appendChild(rcdDisconnectField);
   block.appendChild(g5);
   return block;
@@ -441,7 +446,7 @@ function collectCircuits(){
   return JSON.stringify(Array.from(document.querySelectorAll('#circuitBlocks .dyn-block')).map((b,i)=>{
     const n='c'+(i+1);
     // Use data attributes to reliably identify each field
-    const getInp=attr=>{ const el=b.querySelector('[data-field="'+attr+'"]'); return el?el.value:''; };
+    const getInp=attr=>{ const el=b.querySelector('input[data-field="'+attr+'"]'); return el?el.value:''; };
     // Fallback: collect number inputs from g5 (test results) only
     const testInputs=Array.from(b.querySelectorAll('.test-results-grid input[type=number]'));
     const rcdDisc=b.querySelector('.rcd-disconnect-field input');
@@ -459,10 +464,10 @@ function collectCircuits(){
       rcdType:getBlockRb(b,n+'_rcdType'),
       rcdCurrent:getBlockRb(b,n+'_rcdCurrent'),
       rcdRating:getBlockRb(b,n+'_rcdRating'),
-      rcdDisconnect:rcdDisc?rcdDisc.value:'',
-      r1r2:testInputs[0]?testInputs[0].value:'',
-      zs:testInputs[1]?testInputs[1].value:'',
-      zsDisconnect:testInputs[2]?testInputs[2].value:''
+      rcdDisconnect:getInp('rcdDisconnect'),
+      r1r2:getInp('r1r2'),
+      zs:getInp('zs'),
+      zsDisconnect:''
     };
   }));
 }
