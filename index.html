@@ -134,7 +134,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
       <div class="f"><label>Earth stake location</label><input type="text" id="earthStakeLoc"/></div>
       <div class="f"><label>Resistance to earth (Ω)</label><input type="number" step="0.01" id="resistanceToEarth"/></div>
     </div>
-    <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="rg-fuseRating"><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="selRb(this,'fuseRating')"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',true)"><input type="radio" name="fuseRating" value="Other"/>Other</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',false)"></label></div><div class="other-wrap" id="other-fuseRating"><input type="text" placeholder="Please specify…"/></div></div>
+    <div class="f"><label>BS 1361 fuse rating</label><div class="rg" id="rg-fuseRating"><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',false)"><input type="radio" name="fuseRating" value="63A"/>63A</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',false)"><input type="radio" name="fuseRating" value="80A"/>80A</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',false)"><input type="radio" name="fuseRating" value="100A"/>100A</label><label class="ri" onclick="selRb(this,'fuseRating');showOther('other-fuseRating',true)"><input type="radio" name="fuseRating" value="Other"/>Other</label></div><div class="other-wrap" id="other-fuseRating"><input type="text" placeholder="Please specify…"/></div></div>
     <div class="f"><label>Ze (Ω)</label><input type="number" step="0.001" id="ze"/></div>
     <div class="f"><label>PFC (kA)</label><input type="number" step="0.01" id="pfc"/></div>
     <div class="f"><label>Main switch location</label><input type="text" id="switchLoc" placeholder="e.g. Meter cupboard"/></div>
@@ -323,7 +323,7 @@ function buildCircuitBlock(id){
   const g1=document.createElement('div');g1.className='fg fg3';g1.style.marginBottom='10px';
   g1.appendChild(makeRbField('Circuit type',n+'_circType',['Inverter','EV Charger','Other'],block,true));
   g1.appendChild(makeRbField('Type of wiring',n+'_wiringType',['PVC','SWA','H07','Other'],block,true));
-  const ptsF=makeInpField('Points served','number');g1.appendChild(ptsF);
+  const ptsF=makeInpField('Points served','number');ptsF.querySelector('input').setAttribute('data-field','points');g1.appendChild(ptsF);
   block.appendChild(g1);
 
   // Conductors
@@ -383,7 +383,7 @@ function buildCircuitBlock(id){
   // Test results
   const dv4=document.createElement('div');dv4.className='dv';block.appendChild(dv4);
   const sh4=document.createElement('div');sh4.className='sub';sh4.textContent='Test results';block.appendChild(sh4);
-  const g5=document.createElement('div');g5.className='fg fg3';
+  const g5=document.createElement('div');g5.className='fg fg3 test-results-grid';
   g5.appendChild(makeInpField('R1+R2 (Ω)','number','0.001'));
   g5.appendChild(makeInpField('Zs (Ω)','number','0.001'));
   // RCD disconnect time — hidden unless RCD section visible
@@ -440,8 +440,30 @@ function getChk(idx){const items=document.querySelectorAll('#checklistItems .cl-
 function collectCircuits(){
   return JSON.stringify(Array.from(document.querySelectorAll('#circuitBlocks .dyn-block')).map((b,i)=>{
     const n='c'+(i+1);
-    const nums=Array.from(b.querySelectorAll('input[type=number]:not([name]),input[type=text]:not(.other-wrap input)')).map(e=>e.value);
-    return{circuit:i+1,type:getBlockRb(b,n+'_circType'),wiring:getBlockRb(b,n+'_wiringType'),points:nums[0]||'',live:getBlockRb(b,n+'_live'),cpc:getBlockRb(b,n+'_cpc'),opdType:getBlockRb(b,n+'_opdType'),opdChar:getBlockRb(b,n+'_opdChar'),opdRating:getBlockRb(b,n+'_opdRating'),breakCap:getBlockRb(b,n+'_breakCap'),rcdType:getBlockRb(b,n+'_rcdType'),rcdCurrent:getBlockRb(b,n+'_rcdCurrent'),rcdRating:getBlockRb(b,n+'_rcdRating'),rcdDisconnect:nums[1]||'',r1r2:nums[2]||'',zs:nums[3]||'',zsDisconnect:nums[4]||''};
+    // Use data attributes to reliably identify each field
+    const getInp=attr=>{ const el=b.querySelector('[data-field="'+attr+'"]'); return el?el.value:''; };
+    // Fallback: collect number inputs from g5 (test results) only
+    const testInputs=Array.from(b.querySelectorAll('.test-results-grid input[type=number]'));
+    const rcdDisc=b.querySelector('.rcd-disconnect-field input');
+    return{
+      circuit:i+1,
+      type:getBlockRb(b,n+'_circType'),
+      wiring:getBlockRb(b,n+'_wiringType'),
+      points:getInp('points'),
+      live:getBlockRb(b,n+'_live'),
+      cpc:getBlockRb(b,n+'_cpc'),
+      opdType:getBlockRb(b,n+'_opdType'),
+      opdChar:getBlockRb(b,n+'_opdChar'),
+      opdRating:getBlockRb(b,n+'_opdRating'),
+      breakCap:getBlockRb(b,n+'_breakCap'),
+      rcdType:getBlockRb(b,n+'_rcdType'),
+      rcdCurrent:getBlockRb(b,n+'_rcdCurrent'),
+      rcdRating:getBlockRb(b,n+'_rcdRating'),
+      rcdDisconnect:rcdDisc?rcdDisc.value:'',
+      r1r2:testInputs[0]?testInputs[0].value:'',
+      zs:testInputs[1]?testInputs[1].value:'',
+      zsDisconnect:testInputs[2]?testInputs[2].value:''
+    };
   }));
 }
 

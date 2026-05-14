@@ -177,7 +177,7 @@ function renderJob(d){
       <div class="fg fg3">
         ${field('R1+R2 (Ω)',c.r1r2)}
         ${field('Zs (Ω)',c.zs)}
-        ${field('RCD disconnect time (ms)',c.zsDisconnect)}
+        ${c.rcdDisconnect?field('RCD disconnect time (ms)',c.rcdDisconnect):''}
       </div>
     </div>`).join('');
 
@@ -251,8 +251,8 @@ function renderJob(d){
         ${field('Location',d['DB Location'])}
         ${d['DB Type']==='DB'?field('EMLite serial number',d['EMLite Serial']):''}
         ${field('Number of ways',d['Num Ways'])}
-        ${field('SPD status',d['SPD Status'])}
-        ${field('SPD type',d['SPD Type'])}
+        ${field('SPD installed',d['SPD Installed'])}
+        ${d['SPD Installed']==='Yes'?field('SPD type',d['SPD Type']):''}
         ${field('Correct polarity',d['Correct Polarity'])}
         ${field('Connected to origin',d['Connected to Origin'])}
         ${field('Number of circuits',d['Num Circuits'])}
