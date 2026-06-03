@@ -671,32 +671,34 @@ function closeScanner(){
   video.srcObject=null;
 }
 
+// 1D barcode formats only — no QR or 2D matrix codes
+const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
+
 function startDetecting(video){
-  // Prefer native BarcodeDetector; fall back to ZXing polyfill loaded on demand
+  // Prefer native BarcodeDetector; fall back to ZXing loaded on demand
   if(typeof BarcodeDetector!=='undefined'){
-    scannerDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','qr_code','data_matrix','upc_a','upc_e','itf','pdf417']});
+    scannerDetector=new BarcodeDetector({formats:BARCODE_FORMATS});
     scannerTimer=setInterval(()=>detectFrame(video),300);
   }else{
-    // Lazy-load ZXing WASM polyfill (~90 kB, only fetched when needed and BarcodeDetector absent)
+    // Lazy-load ZXing (~100 kB), only when BarcodeDetector is absent (e.g. Safari)
     const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/index.min.js';
+    s.src='https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.4/umd/index.min.js';
     s.onload=function(){
-      const hints=new Map();
-      hints.set(window.ZXingBrowser.DecodeHintType&&2,true); // TRY_HARDER
-      const reader=new window.ZXingBrowser.BrowserMultiFormatReader(hints);
-      reader.decodeFromVideoElement(video,result=>{
-        if(result){
-          injectSerial(result.getText());
-        }
-      }).catch(()=>{});
-      // Store reader so we can stop it on close
-      scannerDetector=reader;
-      // Override closeScanner to also stop ZXing reader
-      const origClose=closeScanner;
-      window.closeScanner=function(){
-        try{reader.reset();}catch(e){}
-        origClose();
-      };
+      try{
+        // BrowserBarcodeReader reads 1D barcodes only — no QR codes
+        const reader=new window.ZXingBrowser.BrowserBarcodeReader();
+        let controls=null;
+        reader.decodeFromVideoElement(video,function(result,err,ctrl){
+          controls=ctrl;
+          if(result)injectSerial(result.getText());
+        });
+        const origClose=closeScanner;
+        window.closeScanner=function(){
+          try{if(controls)controls.stop();}catch(e){}
+          origClose();
+          window.closeScanner=origClose;
+        };
+      }catch(e){closeScanner();showToast('Scanner unavailable on this browser','error');}
     };
     s.onerror=function(){closeScanner();showToast('Scanner unavailable on this browser','error');};
     document.head.appendChild(s);
