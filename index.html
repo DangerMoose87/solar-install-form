@@ -66,15 +66,29 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 .scan-btn{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:var(--rs);padding:7px 11px;cursor:pointer;color:var(--warn);font-size:16px;display:flex;align-items:center;flex-shrink:0;transition:all .15s;}
 .scan-btn:hover{background:var(--warn);color:#fff;border-color:var(--warn);}
 .scan-btn:disabled{opacity:.4;cursor:not-allowed;}
-/* Barcode scanner overlay */
-.scanner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+/* Camera/OCR scanner overlay */
+.scanner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
 .scanner-overlay.show{display:flex;}
-.scanner-box{position:relative;width:min(90vw,400px);}
+.scanner-box{position:relative;width:min(90vw,420px);}
 .scanner-box video{width:100%;border-radius:var(--r);display:block;}
 .scanner-aim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-.scanner-aim::before{content:'';display:block;width:60%;aspect-ratio:3/1;border:2px solid rgba(255,200,0,.8);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.3);}
-.scanner-label{color:#fff;font-size:14px;opacity:.8;}
+.scanner-aim::before{content:'';display:block;width:80%;height:56px;border:2px solid rgba(255,200,0,.9);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.45);}
+.scanner-label{color:#fff;font-size:13px;opacity:.75;text-align:center;}
+.scanner-actions{display:flex;gap:10px;align-items:center;}
+.scanner-capture{background:rgba(255,200,0,.9);border:none;border-radius:50%;width:60px;height:60px;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.scanner-capture:hover{background:#ffcc00;}
+.scanner-capture:disabled{opacity:.4;cursor:not-allowed;}
 .scanner-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--rs);padding:9px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
+/* OCR confirm dialog */
+.ocr-confirm{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:center;justify-content:center;}
+.ocr-confirm.show{display:flex;}
+.ocr-card{background:var(--surface);border-radius:var(--r);padding:20px;width:min(90vw,360px);display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.ocr-card h3{font-size:15px;font-weight:600;}
+.ocr-card p{font-size:13px;color:var(--muted);}
+.ocr-result{border:1px solid var(--border-s);border-radius:var(--rs);padding:9px 11px;font-size:15px;font-family:'DM Sans',sans-serif;width:100%;color:var(--text);background:var(--surface2);}
+.ocr-btns{display:flex;gap:8px;justify-content:flex-end;}
+.ocr-btn-retry{background:transparent;border:1px solid var(--border-s);border-radius:var(--rs);padding:8px 14px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);}
+.ocr-btn-use{background:var(--accent);border:none;border-radius:var(--rs);padding:8px 16px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#fff;font-weight:500;}
 .cl-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;user-select:none;transition:all .15s;background:var(--surface2);}
 .cl-item:last-child{margin-bottom:0;}
 .cl-item:hover{border-color:var(--accent);background:var(--accent-bg);}
@@ -210,14 +224,31 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
   <button class="btn-p" id="submitBtn" onclick="submitForm()"><i class="ti ti-send" aria-hidden="true"></i> Submit</button>
 </div>
 </div>
-<!-- Barcode scanner overlay -->
+<!-- Camera OCR overlay -->
 <div class="scanner-overlay" id="scannerOverlay">
   <div class="scanner-box">
     <video id="scannerVideo" autoplay playsinline muted></video>
     <div class="scanner-aim"></div>
   </div>
-  <span class="scanner-label">Point camera at barcode</span>
-  <button class="scanner-close" onclick="closeScanner()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
+  <span class="scanner-label" id="scannerLabel">Line up serial number inside the box, then tap capture</span>
+  <div class="scanner-actions">
+    <button class="scanner-close" onclick="closeScanner()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
+    <button class="scanner-capture" id="captureBtn" onclick="captureOCR()" title="Capture">
+      <i class="ti ti-camera" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+<!-- OCR confirm dialog -->
+<div class="ocr-confirm" id="ocrConfirm">
+  <div class="ocr-card">
+    <h3>Confirm serial number</h3>
+    <p>Check the text below and correct any errors before using it.</p>
+    <input class="ocr-result" id="ocrResult" type="text" placeholder=""/>
+    <div class="ocr-btns">
+      <button class="ocr-btn-retry" onclick="retryOCR()"><i class="ti ti-refresh" aria-hidden="true"></i> Retry</button>
+      <button class="ocr-btn-use" onclick="useOCRResult()">Use this <i class="ti ti-check" aria-hidden="true"></i></button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -633,15 +664,9 @@ function clearForm(){
 
 updateProgress();
 
-// --- Barcode scanner ---
+// --- Camera OCR scanner ---
 let scannerStream=null;
-let scannerTimer=null;
-let scannerDetector=null;
-let zxingReader=null;
-let scannerCanvas=null;
-
-// 1D barcode formats only — no QR or 2D codes
-const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
+let tesseractWorker=null;
 
 (function initScanBtn(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
@@ -650,100 +675,138 @@ const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','
   }
 })();
 
-async function startCamera(video){
-  scannerStream=await navigator.mediaDevices.getUserMedia({
-    video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},
-    audio:false
-  });
-  video.srcObject=scannerStream;
-  await video.play();
-}
-
 async function openScanner(){
   const overlay=document.getElementById('scannerOverlay');
   const video=document.getElementById('scannerVideo');
   overlay.classList.add('show');
+  setLabel('Line up serial number inside the box, then tap capture');
   try{
-    await startCamera(video);
-    if(typeof BarcodeDetector!=='undefined'){
-      // Chrome/Android: native BarcodeDetector
-      scannerDetector=new BarcodeDetector({formats:BARCODE_FORMATS});
-      scannerTimer=setInterval(()=>detectFrameNative(video),300);
-    }else{
-      // Safari/other: ZXing canvas decode
-      loadZxingThenScan(video);
-    }
+    scannerStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},
+      audio:false
+    });
+    video.srcObject=scannerStream;
+    await video.play();
+    // Pre-load Tesseract in background so capture feels instant
+    loadTesseract();
   }catch(err){
     closeScanner();
     showToast('Camera access denied or unavailable','error');
   }
 }
 
-function loadZxingThenScan(video){
-  if(window.ZXing){startZxingScan(video);return;}
+function loadTesseract(){
+  if(window.Tesseract||document.getElementById('tesseractScript'))return;
   const s=document.createElement('script');
-  s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
-  s.onload=function(){startZxingScan(video);};
-  s.onerror=function(){closeScanner();showToast('Scanner unavailable — check your connection','error');};
+  s.id='tesseractScript';
+  s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
   document.head.appendChild(s);
 }
 
-function startZxingScan(video){
-  if(!window.ZXing){closeScanner();showToast('Scanner unavailable on this browser','error');return;}
-  const hints=new Map();
-  const ZX=window.ZXing;
-  hints.set(ZX.DecodeHintType.POSSIBLE_FORMATS,[
-    ZX.BarcodeFormat.CODE_128,
-    ZX.BarcodeFormat.CODE_39,
-    ZX.BarcodeFormat.CODE_93,
-    ZX.BarcodeFormat.EAN_13,
-    ZX.BarcodeFormat.EAN_8,
-    ZX.BarcodeFormat.UPC_A,
-    ZX.BarcodeFormat.UPC_E,
-    ZX.BarcodeFormat.ITF,
-    ZX.BarcodeFormat.CODABAR
-  ]);
-  zxingReader=new ZX.MultiFormatReader();
-  zxingReader.setHints(hints);
-  if(!scannerCanvas)scannerCanvas=document.createElement('canvas');
-  scannerTimer=setInterval(()=>detectFrameZxing(video),300);
+async function getTesseractWorker(){
+  if(tesseractWorker)return tesseractWorker;
+  if(!window.Tesseract){
+    // Wait up to 10s for script to load
+    await new Promise((res,rej)=>{
+      let t=0;
+      const iv=setInterval(()=>{
+        if(window.Tesseract){clearInterval(iv);res();}
+        if(++t>100){clearInterval(iv);rej(new Error('Tesseract not loaded'));}
+      },100);
+    });
+  }
+  tesseractWorker=await Tesseract.createWorker('eng',1,{
+    logger:()=>{}
+  });
+  await tesseractWorker.setParameters({
+    tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_. /',
+    tessedit_pageseg_mode:'7'  // single line
+  });
+  return tesseractWorker;
 }
 
-function detectFrameZxing(video){
-  if(!zxingReader||video.readyState<2||video.videoWidth===0)return;
-  const w=video.videoWidth,h=video.videoHeight;
-  scannerCanvas.width=w;scannerCanvas.height=h;
-  const ctx=scannerCanvas.getContext('2d');
-  ctx.drawImage(video,0,0,w,h);
-  const imageData=ctx.getImageData(0,0,w,h);
-  const rgba=imageData.data;
-  const rgb=new Uint8ClampedArray(w*h*3);
-  for(let i=0,j=0;i<rgba.length;i+=4,j+=3){rgb[j]=rgba[i];rgb[j+1]=rgba[i+1];rgb[j+2]=rgba[i+2];}
+async function captureOCR(){
+  const video=document.getElementById('scannerVideo');
+  const captureBtn=document.getElementById('captureBtn');
+  if(video.readyState<2||video.videoWidth===0){
+    showToast('Camera not ready yet','error');return;
+  }
+  captureBtn.disabled=true;
+  setLabel('Reading text...');
+
+  // Crop to the aim box region (centre 80% width, fixed height window)
+  const vw=video.videoWidth,vh=video.videoHeight;
+  const cropW=Math.round(vw*0.8);
+  const cropH=Math.round(cropW*0.15);  // thin horizontal strip matching the overlay box
+  const cropX=Math.round((vw-cropW)/2);
+  const cropY=Math.round((vh-cropH)/2);
+
+  const canvas=document.createElement('canvas');
+  canvas.width=cropW;
+  canvas.height=cropH;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(video,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
+
+  // Scale up for better OCR accuracy
+  const scale=3;
+  const canvas2=document.createElement('canvas');
+  canvas2.width=cropW*scale;
+  canvas2.height=cropH*scale;
+  const ctx2=canvas2.getContext('2d');
+  ctx2.imageSmoothingEnabled=false;
+  ctx2.drawImage(canvas,0,0,canvas2.width,canvas2.height);
+
   try{
-    const src=new ZXing.RGBLuminanceSource(rgb,w,h);
-    const bmp=new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(src));
-    const result=zxingReader.decode(bmp);
-    if(result)injectSerial(result.getText());
-  }catch(e){/* NotFoundException is normal when no barcode visible */}
+    const worker=await getTesseractWorker();
+    const {data}=await worker.recognize(canvas2);
+    const text=(data.text||'').replace(/\s+/g,' ').trim();
+    captureBtn.disabled=false;
+    if(!text){
+      setLabel('Nothing detected — try again');
+    }else{
+      showOCRConfirm(text);
+    }
+  }catch(e){
+    captureBtn.disabled=false;
+    setLabel('Line up serial number inside the box, then tap capture');
+    showToast('OCR failed — try again','error');
+  }
+}
+
+function showOCRConfirm(text){
+  document.getElementById('ocrResult').value=text;
+  document.getElementById('ocrConfirm').classList.add('show');
+  setLabel('Line up serial number inside the box, then tap capture');
+}
+
+function retryOCR(){
+  document.getElementById('ocrConfirm').classList.remove('show');
+}
+
+function useOCRResult(){
+  const val=document.getElementById('ocrResult').value.trim();
+  document.getElementById('ocrConfirm').classList.remove('show');
+  closeScanner();
+  if(val){
+    const field=document.getElementById('emliteSerial');
+    field.value=val;
+    field.dispatchEvent(new Event('input'));
+    field.focus();
+    showToast('Serial number captured','success');
+  }
 }
 
 function closeScanner(){
-  const overlay=document.getElementById('scannerOverlay');
-  const video=document.getElementById('scannerVideo');
-  overlay.classList.remove('show');
-  if(scannerTimer){clearInterval(scannerTimer);scannerTimer=null;}
+  document.getElementById('scannerOverlay').classList.remove('show');
+  document.getElementById('ocrConfirm').classList.remove('show');
+  document.getElementById('captureBtn').disabled=false;
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
+  const video=document.getElementById('scannerVideo');
   video.srcObject=null;
-  scannerDetector=null;
-  zxingReader=null;
 }
 
-async function detectFrameNative(video){
-  if(!scannerDetector||video.readyState<2)return;
-  try{
-    const results=await scannerDetector.detect(video);
-    if(results&&results.length>0)injectSerial(results[0].rawValue);
-  }catch(e){}
+function setLabel(msg){
+  document.getElementById('scannerLabel').textContent=msg;
 }
 
 function injectSerial(value){
@@ -754,7 +817,7 @@ function injectSerial(value){
     field.dispatchEvent(new Event('input'));
     field.focus();
   }
-  showToast('Serial number scanned','success');
+  showToast('Serial number captured','success');
 }
 </script>
 </body>
