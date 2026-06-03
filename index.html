@@ -74,11 +74,9 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 .scanner-aim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .scanner-aim::before{content:'';display:block;width:80%;height:56px;border:2px solid rgba(255,200,0,.9);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.45);}
 .scanner-label{color:#fff;font-size:13px;opacity:.75;text-align:center;}
-.scanner-actions{display:flex;gap:10px;align-items:center;}
-.scanner-capture{background:rgba(255,200,0,.9);border:none;border-radius:50%;width:60px;height:60px;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
-.scanner-capture:hover{background:#ffcc00;}
-.scanner-capture:disabled{opacity:.4;cursor:not-allowed;}
 .scanner-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--rs);padding:9px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
+@keyframes scanner-pulse{0%,100%{border-color:rgba(255,200,0,.9);}50%{border-color:rgba(255,200,0,.3);}}
+.scanning .scanner-aim::before{animation:scanner-pulse 1.2s ease-in-out infinite;}
 /* OCR confirm dialog */
 .ocr-confirm{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:center;justify-content:center;}
 .ocr-confirm.show{display:flex;}
@@ -230,13 +228,8 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
     <video id="scannerVideo" autoplay playsinline muted></video>
     <div class="scanner-aim"></div>
   </div>
-  <span class="scanner-label" id="scannerLabel">Line up serial number inside the box, then tap capture</span>
-  <div class="scanner-actions">
-    <button class="scanner-close" onclick="closeScanner()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
-    <button class="scanner-capture" id="captureBtn" onclick="captureOCR()" title="Capture">
-      <i class="ti ti-camera" aria-hidden="true"></i>
-    </button>
-  </div>
+  <span class="scanner-label" id="scannerLabel">Line up serial number inside the box</span>
+  <button class="scanner-close" onclick="closeScanner()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
 </div>
 <!-- OCR confirm dialog -->
 <div class="ocr-confirm" id="ocrConfirm">
@@ -666,7 +659,9 @@ updateProgress();
 
 // --- Camera OCR scanner ---
 let scannerStream=null;
+let scannerTimer=null;
 let tesseractWorker=null;
+let ocrBusy=false;
 
 (function initScanBtn(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
@@ -679,7 +674,7 @@ async function openScanner(){
   const overlay=document.getElementById('scannerOverlay');
   const video=document.getElementById('scannerVideo');
   overlay.classList.add('show');
-  setLabel('Line up serial number inside the box, then tap capture');
+  setLabel('Starting camera...');
   try{
     scannerStream=await navigator.mediaDevices.getUserMedia({
       video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}},
@@ -687,96 +682,106 @@ async function openScanner(){
     });
     video.srcObject=scannerStream;
     await video.play();
-    // Pre-load Tesseract in background so capture feels instant
-    loadTesseract();
+    setLabel('Hold steady — scanning...');
+    overlay.classList.add('scanning');
+    // Init worker in background, then start auto-scan loop
+    getTesseractWorker().then(()=>{
+      scannerTimer=setInterval(autoScanFrame,1800);
+    }).catch(()=>{
+      setLabel('OCR unavailable — check connection');
+    });
   }catch(err){
     closeScanner();
     showToast('Camera access denied or unavailable','error');
   }
 }
 
-function loadTesseract(){
-  if(window.Tesseract||document.getElementById('tesseractScript'))return;
-  const s=document.createElement('script');
-  s.id='tesseractScript';
-  s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-  document.head.appendChild(s);
-}
-
 async function getTesseractWorker(){
   if(tesseractWorker)return tesseractWorker;
   if(!window.Tesseract){
-    // Wait up to 10s for script to load
+    // Load script if not already present
     await new Promise((res,rej)=>{
-      let t=0;
-      const iv=setInterval(()=>{
-        if(window.Tesseract){clearInterval(iv);res();}
-        if(++t>100){clearInterval(iv);rej(new Error('Tesseract not loaded'));}
-      },100);
+      if(document.getElementById('tesseractScript')){
+        // Already loading — just wait
+        let t=0;
+        const iv=setInterval(()=>{
+          if(window.Tesseract){clearInterval(iv);res();}
+          if(++t>150){clearInterval(iv);rej(new Error('timeout'));}
+        },100);
+        return;
+      }
+      const s=document.createElement('script');
+      s.id='tesseractScript';
+      s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+      s.onload=res;s.onerror=rej;
+      document.head.appendChild(s);
     });
   }
-  tesseractWorker=await Tesseract.createWorker('eng',1,{
-    logger:()=>{}
-  });
+  tesseractWorker=await Tesseract.createWorker('eng',1,{logger:()=>{}});
   await tesseractWorker.setParameters({
-    tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_. /',
-    tessedit_pageseg_mode:'7'  // single line
+    tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.',
+    tessedit_pageseg_mode:'7'
   });
   return tesseractWorker;
 }
 
-async function captureOCR(){
+async function autoScanFrame(){
+  if(ocrBusy)return;
   const video=document.getElementById('scannerVideo');
-  const captureBtn=document.getElementById('captureBtn');
-  if(video.readyState<2||video.videoWidth===0){
-    showToast('Camera not ready yet','error');return;
-  }
-  captureBtn.disabled=true;
-  setLabel('Reading text...');
+  if(!video||video.readyState<2||video.videoWidth===0)return;
+  // Pause scanning while confirm dialog is open
+  if(document.getElementById('ocrConfirm').classList.contains('show'))return;
 
-  // Crop to the aim box region (centre 80% width, fixed height window)
-  const vw=video.videoWidth,vh=video.videoHeight;
-  const cropW=Math.round(vw*0.8);
-  const cropH=Math.round(cropW*0.15);  // thin horizontal strip matching the overlay box
-  const cropX=Math.round((vw-cropW)/2);
-  const cropY=Math.round((vh-cropH)/2);
-
-  const canvas=document.createElement('canvas');
-  canvas.width=cropW;
-  canvas.height=cropH;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(video,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
-
-  // Scale up for better OCR accuracy
-  const scale=3;
-  const canvas2=document.createElement('canvas');
-  canvas2.width=cropW*scale;
-  canvas2.height=cropH*scale;
-  const ctx2=canvas2.getContext('2d');
-  ctx2.imageSmoothingEnabled=false;
-  ctx2.drawImage(canvas,0,0,canvas2.width,canvas2.height);
+  ocrBusy=true;
+  const processed=cropAndProcess(video);
+  if(!processed){ocrBusy=false;return;}
 
   try{
     const worker=await getTesseractWorker();
-    const {data}=await worker.recognize(canvas2);
-    const text=(data.text||'').replace(/\s+/g,' ').trim();
-    captureBtn.disabled=false;
-    if(!text){
-      setLabel('Nothing detected — try again');
-    }else{
+    const {data}=await worker.recognize(processed);
+    // Only accept result if Tesseract has reasonable confidence
+    const words=(data.words||[]).filter(w=>w.confidence>60);
+    const text=words.map(w=>w.text).join(' ').replace(/\s+/g,' ').trim();
+    if(text.length>=3){
       showOCRConfirm(text);
     }
-  }catch(e){
-    captureBtn.disabled=false;
-    setLabel('Line up serial number inside the box, then tap capture');
-    showToast('OCR failed — try again','error');
+  }catch(e){}
+  ocrBusy=false;
+}
+
+function cropAndProcess(video){
+  const vw=video.videoWidth,vh=video.videoHeight;
+  if(!vw||!vh)return null;
+
+  // Crop the centre horizontal strip matching the aim box (80% wide, ~13% tall)
+  const cropW=Math.round(vw*0.8);
+  const cropH=Math.round(vw*0.13);
+  const cropX=Math.round((vw-cropW)/2);
+  const cropY=Math.round((vh-cropH)/2);
+
+  // Draw crop, scale 3x for OCR accuracy
+  const scale=3;
+  const c=document.createElement('canvas');
+  c.width=cropW*scale;c.height=cropH*scale;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(video,cropX,cropY,cropW,cropH,0,0,c.width,c.height);
+
+  // Grayscale + contrast boost to help OCR on real-world lighting
+  const img=ctx.getImageData(0,0,c.width,c.height);
+  const d=img.data;
+  for(let i=0;i<d.length;i+=4){
+    const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    // Contrast stretch: push mid-tones apart
+    const v=Math.max(0,Math.min(255,((gray-128)*1.6)+128));
+    d[i]=d[i+1]=d[i+2]=v;
   }
+  ctx.putImageData(img,0,0);
+  return c;
 }
 
 function showOCRConfirm(text){
   document.getElementById('ocrResult').value=text;
   document.getElementById('ocrConfirm').classList.add('show');
-  setLabel('Line up serial number inside the box, then tap capture');
 }
 
 function retryOCR(){
@@ -797,9 +802,10 @@ function useOCRResult(){
 }
 
 function closeScanner(){
-  document.getElementById('scannerOverlay').classList.remove('show');
+  if(scannerTimer){clearInterval(scannerTimer);scannerTimer=null;}
+  ocrBusy=false;
+  document.getElementById('scannerOverlay').classList.remove('show','scanning');
   document.getElementById('ocrConfirm').classList.remove('show');
-  document.getElementById('captureBtn').disabled=false;
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
   const video=document.getElementById('scannerVideo');
   video.srcObject=null;
@@ -807,17 +813,6 @@ function closeScanner(){
 
 function setLabel(msg){
   document.getElementById('scannerLabel').textContent=msg;
-}
-
-function injectSerial(value){
-  closeScanner();
-  const field=document.getElementById('emliteSerial');
-  if(field){
-    field.value=value.trim();
-    field.dispatchEvent(new Event('input'));
-    field.focus();
-  }
-  showToast('Serial number captured','success');
 }
 </script>
 </body>
