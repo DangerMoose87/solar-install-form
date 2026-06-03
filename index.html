@@ -75,6 +75,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 .scanner-aim::before{content:'';display:block;width:60%;aspect-ratio:3/1;border:2px solid rgba(255,200,0,.8);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.3);}
 .scanner-label{color:#fff;font-size:14px;opacity:.8;}
 .scanner-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--rs);padding:9px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
+.drawingBuffer{display:none!important;}
 .cl-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;user-select:none;transition:all .15s;background:var(--surface2);}
 .cl-item:last-child{margin-bottom:0;}
 .cl-item:hover{border-color:var(--accent);background:var(--accent-bg);}
@@ -212,7 +213,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 </div>
 <!-- Barcode scanner overlay -->
 <div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-box">
+  <div class="scanner-box" id="scannerBox">
     <video id="scannerVideo" autoplay playsinline muted></video>
     <div class="scanner-aim"></div>
   </div>
@@ -638,8 +639,10 @@ let scannerStream=null;
 let scannerTimer=null;
 let scannerDetector=null;
 
+// 1D barcode formats only — no QR or 2D codes
+const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
+
 (function initScanBtn(){
-  // Hide button entirely if camera API is unavailable (e.g. HTTP, old browser)
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     const btn=document.getElementById('scanBtn');
     if(btn)btn.style.display='none';
@@ -651,15 +654,57 @@ async function openScanner(){
   const video=document.getElementById('scannerVideo');
   overlay.classList.add('show');
 
-  try{
-    scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-    video.srcObject=scannerStream;
-    await video.play();
-    startDetecting(video);
-  }catch(err){
-    closeScanner();
-    showToast('Camera access denied or unavailable','error');
+  if(typeof BarcodeDetector!=='undefined'){
+    // Chrome/Android: native BarcodeDetector
+    video.style.display='block';
+    try{
+      scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+      video.srcObject=scannerStream;
+      await video.play();
+      scannerDetector=new BarcodeDetector({formats:BARCODE_FORMATS});
+      scannerTimer=setInterval(()=>detectFrame(video),300);
+    }catch(err){
+      closeScanner();
+      showToast('Camera access denied or unavailable','error');
+    }
+  }else{
+    // Safari/other: Quagga2 handles its own camera stream
+    video.style.display='none';
+    if(window.Quagga){startQuagga();}
+    else{
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js';
+      s.onload=startQuagga;
+      s.onerror=function(){closeScanner();showToast('Scanner unavailable — check your connection','error');};
+      document.head.appendChild(s);
+    }
   }
+}
+
+function startQuagga(){
+  const Q=window.Quagga;
+  if(!Q){closeScanner();showToast('Scanner unavailable on this browser','error');return;}
+  Q.init({
+    inputStream:{name:'Live',type:'LiveStream',
+      target:document.getElementById('scannerBox'),
+      constraints:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}
+    },
+    decoder:{readers:['code_128_reader','code_39_reader','ean_reader','ean_8_reader','upc_reader','upc_e_reader','codabar_reader','i2of5_reader']},
+    locate:true
+  },function(err){
+    if(err){closeScanner();showToast('Camera access denied or unavailable','error');return;}
+    Q.start();
+    Q.onDetected(function(result){
+      const code=result&&result.codeResult&&result.codeResult.code;
+      if(code)injectSerial(code);
+    });
+  });
+  const origClose=closeScanner;
+  window.closeScanner=function(){
+    try{Q.stop();}catch(e){}
+    origClose();
+    window.closeScanner=origClose;
+  };
 }
 
 function closeScanner(){
@@ -669,49 +714,14 @@ function closeScanner(){
   if(scannerTimer){clearInterval(scannerTimer);scannerTimer=null;}
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
   video.srcObject=null;
-}
-
-// 1D barcode formats only — no QR or 2D matrix codes
-const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
-
-function startDetecting(video){
-  // Prefer native BarcodeDetector; fall back to ZXing loaded on demand
-  if(typeof BarcodeDetector!=='undefined'){
-    scannerDetector=new BarcodeDetector({formats:BARCODE_FORMATS});
-    scannerTimer=setInterval(()=>detectFrame(video),300);
-  }else{
-    // Lazy-load ZXing (~100 kB), only when BarcodeDetector is absent (e.g. Safari)
-    const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.4/umd/index.min.js';
-    s.onload=function(){
-      try{
-        // BrowserBarcodeReader reads 1D barcodes only — no QR codes
-        const reader=new window.ZXingBrowser.BrowserBarcodeReader();
-        let controls=null;
-        reader.decodeFromVideoElement(video,function(result,err,ctrl){
-          controls=ctrl;
-          if(result)injectSerial(result.getText());
-        });
-        const origClose=closeScanner;
-        window.closeScanner=function(){
-          try{if(controls)controls.stop();}catch(e){}
-          origClose();
-          window.closeScanner=origClose;
-        };
-      }catch(e){closeScanner();showToast('Scanner unavailable on this browser','error');}
-    };
-    s.onerror=function(){closeScanner();showToast('Scanner unavailable on this browser','error');};
-    document.head.appendChild(s);
-  }
+  video.style.display='block';
 }
 
 async function detectFrame(video){
   if(!scannerDetector||video.readyState<2)return;
   try{
     const results=await scannerDetector.detect(video);
-    if(results&&results.length>0){
-      injectSerial(results[0].rawValue);
-    }
+    if(results&&results.length>0)injectSerial(results[0].rawValue);
   }catch(e){}
 }
 
