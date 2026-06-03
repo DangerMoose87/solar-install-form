@@ -60,21 +60,8 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 .hint{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:5px;margin-top:-6px;}
 .emlite-wrap{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:var(--rs);padding:10px 13px;display:flex;flex-direction:column;gap:5px;margin-top:0;}
 .emlite-wrap label{font-size:12px;font-weight:500;color:var(--warn);}
-.emlite-input-row{display:flex;gap:8px;align-items:center;}
-.emlite-wrap input{border:1px solid var(--warn-bd);border-radius:var(--rs);padding:7px 10px;font-size:14px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;flex:1;min-width:0;}
+.emlite-wrap input{border:1px solid var(--warn-bd);border-radius:var(--rs);padding:7px 10px;font-size:14px;background:var(--surface);color:var(--text);font-family:'DM Sans',sans-serif;width:100%;}
 .emlite-wrap input:focus{outline:none;border-color:var(--warn);}
-.scan-btn{background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:var(--rs);padding:7px 11px;cursor:pointer;color:var(--warn);font-size:16px;display:flex;align-items:center;flex-shrink:0;transition:all .15s;}
-.scan-btn:hover{background:var(--warn);color:#fff;border-color:var(--warn);}
-.scan-btn:disabled{opacity:.4;cursor:not-allowed;}
-/* Barcode scanner overlay */
-.scanner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-.scanner-overlay.show{display:flex;}
-.scanner-box{position:relative;width:min(90vw,400px);}
-.scanner-box video{width:100%;border-radius:var(--r);display:block;}
-.scanner-aim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-.scanner-aim::before{content:'';display:block;width:60%;aspect-ratio:3/1;border:2px solid rgba(255,200,0,.8);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.3);}
-.scanner-label{color:#fff;font-size:14px;opacity:.8;}
-.scanner-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--rs);padding:9px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
 .cl-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;user-select:none;transition:all .15s;background:var(--surface2);}
 .cl-item:last-child{margin-bottom:0;}
 .cl-item:hover{border-color:var(--accent);background:var(--accent-bg);}
@@ -168,7 +155,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
     <div class="f"><label>Type</label><div class="rg" id="rg-dbType"><label class="ri" onclick="selRb(this,'dbType');showCond('emliteField',true)"><input type="radio" name="dbType" value="DB"/>DB</label><label class="ri" onclick="selRb(this,'dbType');showCond('emliteField',false)"><input type="radio" name="dbType" value="Gateway"/>Gateway</label></div></div>
     <div class="f"><label>Location</label><input type="text" id="dbLocation" placeholder="e.g. Utility room"/></div>
     <div class="cond full" id="emliteField">
-      <div class="emlite-wrap"><label><i class="ti ti-gauge" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>EMLite export meter serial number</label><div class="emlite-input-row"><input type="text" id="emliteSerial" placeholder="Enter serial number"/><button type="button" class="scan-btn" id="scanBtn" onclick="openScanner()" title="Scan barcode"><i class="ti ti-barcode" aria-hidden="true"></i></button></div></div>
+      <div class="emlite-wrap"><label><i class="ti ti-gauge" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>EMLite export meter serial number</label><input type="text" id="emliteSerial" placeholder="Enter serial number"/></div>
     </div>
     <div class="f"><label>Number of ways</label><input type="number" id="dbWays"/></div>
     <div class="f"><label>SPD installed?</label><div class="rg" id="rg-spdStatus"><label class="ri" onclick="selRb(this,'spdStatus');showCond('spdTypeField',true)"><input type="radio" name="spdStatus" value="Yes"/>Yes</label><label class="ri" onclick="selRb(this,'spdStatus');showCond('spdTypeField',false)"><input type="radio" name="spdStatus" value="No"/>No</label></div></div>
@@ -210,16 +197,6 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
   <button class="btn-p" id="submitBtn" onclick="submitForm()"><i class="ti ti-send" aria-hidden="true"></i> Submit</button>
 </div>
 </div>
-<!-- Barcode scanner overlay -->
-<div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-box">
-    <video id="scannerVideo" autoplay playsinline muted></video>
-    <div class="scanner-aim"></div>
-  </div>
-  <span class="scanner-label">Point camera at barcode</span>
-  <button class="scanner-close" onclick="closeScanner()"><i class="ti ti-x" aria-hidden="true"></i> Cancel</button>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -632,97 +609,6 @@ function clearForm(){
 }
 
 updateProgress();
-
-// --- Barcode scanner ---
-let scannerStream=null;
-let scannerTimer=null;
-let scannerDetector=null;
-
-(function initScanBtn(){
-  // Hide button entirely if camera API is unavailable (e.g. HTTP, old browser)
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    const btn=document.getElementById('scanBtn');
-    if(btn)btn.style.display='none';
-  }
-})();
-
-async function openScanner(){
-  const overlay=document.getElementById('scannerOverlay');
-  const video=document.getElementById('scannerVideo');
-  overlay.classList.add('show');
-
-  try{
-    scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-    video.srcObject=scannerStream;
-    await video.play();
-    startDetecting(video);
-  }catch(err){
-    closeScanner();
-    showToast('Camera access denied or unavailable','error');
-  }
-}
-
-function closeScanner(){
-  const overlay=document.getElementById('scannerOverlay');
-  const video=document.getElementById('scannerVideo');
-  overlay.classList.remove('show');
-  if(scannerTimer){clearInterval(scannerTimer);scannerTimer=null;}
-  if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
-  video.srcObject=null;
-}
-
-function startDetecting(video){
-  // Prefer native BarcodeDetector; fall back to ZXing polyfill loaded on demand
-  if(typeof BarcodeDetector!=='undefined'){
-    scannerDetector=new BarcodeDetector({formats:['code_128','code_39','ean_13','ean_8','qr_code','data_matrix','upc_a','upc_e','itf','pdf417']});
-    scannerTimer=setInterval(()=>detectFrame(video),300);
-  }else{
-    // Lazy-load ZXing WASM polyfill (~90 kB, only fetched when needed and BarcodeDetector absent)
-    const s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/index.min.js';
-    s.onload=function(){
-      const hints=new Map();
-      hints.set(window.ZXingBrowser.DecodeHintType&&2,true); // TRY_HARDER
-      const reader=new window.ZXingBrowser.BrowserMultiFormatReader(hints);
-      reader.decodeFromVideoElement(video,result=>{
-        if(result){
-          injectSerial(result.getText());
-        }
-      }).catch(()=>{});
-      // Store reader so we can stop it on close
-      scannerDetector=reader;
-      // Override closeScanner to also stop ZXing reader
-      const origClose=closeScanner;
-      window.closeScanner=function(){
-        try{reader.reset();}catch(e){}
-        origClose();
-      };
-    };
-    s.onerror=function(){closeScanner();showToast('Scanner unavailable on this browser','error');};
-    document.head.appendChild(s);
-  }
-}
-
-async function detectFrame(video){
-  if(!scannerDetector||video.readyState<2)return;
-  try{
-    const results=await scannerDetector.detect(video);
-    if(results&&results.length>0){
-      injectSerial(results[0].rawValue);
-    }
-  }catch(e){}
-}
-
-function injectSerial(value){
-  closeScanner();
-  const field=document.getElementById('emliteSerial');
-  if(field){
-    field.value=value.trim();
-    field.dispatchEvent(new Event('input'));
-    field.focus();
-  }
-  showToast('Serial number scanned','success');
-}
 </script>
 </body>
 </html>
