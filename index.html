@@ -69,13 +69,12 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 /* Barcode scanner overlay */
 .scanner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .scanner-overlay.show{display:flex;}
-.scanner-box{position:relative;width:min(90vw,400px);aspect-ratio:4/3;overflow:hidden;border-radius:var(--r);}
-.scanner-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
+.scanner-box{position:relative;width:min(90vw,400px);}
+.scanner-box video{width:100%;border-radius:var(--r);display:block;}
 .scanner-aim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
 .scanner-aim::before{content:'';display:block;width:60%;aspect-ratio:3/1;border:2px solid rgba(255,200,0,.8);border-radius:6px;box-shadow:0 0 0 2000px rgba(0,0,0,.3);}
 .scanner-label{color:#fff;font-size:14px;opacity:.8;}
 .scanner-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--rs);padding:9px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;}
-.drawingBuffer{display:none!important;}
 .cl-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid var(--border);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;user-select:none;transition:all .15s;background:var(--surface2);}
 .cl-item:last-child{margin-bottom:0;}
 .cl-item:hover{border-color:var(--accent);background:var(--accent-bg);}
@@ -213,7 +212,7 @@ header nav a:hover{background:var(--accent-bg);border-color:var(--accent);color:
 </div>
 <!-- Barcode scanner overlay -->
 <div class="scanner-overlay" id="scannerOverlay">
-  <div class="scanner-box" id="scannerBox">
+  <div class="scanner-box">
     <video id="scannerVideo" autoplay playsinline muted></video>
     <div class="scanner-aim"></div>
   </div>
@@ -638,6 +637,8 @@ updateProgress();
 let scannerStream=null;
 let scannerTimer=null;
 let scannerDetector=null;
+let zxingReader=null;
+let scannerCanvas=null;
 
 // 1D barcode formats only — no QR or 2D codes
 const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
@@ -649,62 +650,81 @@ const BARCODE_FORMATS=['code_128','code_39','code_93','ean_13','ean_8','upc_a','
   }
 })();
 
+async function startCamera(video){
+  scannerStream=await navigator.mediaDevices.getUserMedia({
+    video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},
+    audio:false
+  });
+  video.srcObject=scannerStream;
+  await video.play();
+}
+
 async function openScanner(){
   const overlay=document.getElementById('scannerOverlay');
   const video=document.getElementById('scannerVideo');
   overlay.classList.add('show');
-
-  if(typeof BarcodeDetector!=='undefined'){
-    // Chrome/Android: native BarcodeDetector
-    video.style.display='block';
-    try{
-      scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-      video.srcObject=scannerStream;
-      await video.play();
+  try{
+    await startCamera(video);
+    if(typeof BarcodeDetector!=='undefined'){
+      // Chrome/Android: native BarcodeDetector
       scannerDetector=new BarcodeDetector({formats:BARCODE_FORMATS});
-      scannerTimer=setInterval(()=>detectFrame(video),300);
-    }catch(err){
-      closeScanner();
-      showToast('Camera access denied or unavailable','error');
+      scannerTimer=setInterval(()=>detectFrameNative(video),300);
+    }else{
+      // Safari/other: ZXing canvas decode
+      loadZxingThenScan(video);
     }
-  }else{
-    // Safari/other: Quagga2 handles its own camera stream
-    video.style.display='none';
-    if(window.Quagga){startQuagga();}
-    else{
-      const s=document.createElement('script');
-      s.src='https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js';
-      s.onload=startQuagga;
-      s.onerror=function(){closeScanner();showToast('Scanner unavailable — check your connection','error');};
-      document.head.appendChild(s);
-    }
+  }catch(err){
+    closeScanner();
+    showToast('Camera access denied or unavailable','error');
   }
 }
 
-function startQuagga(){
-  const Q=window.Quagga;
-  if(!Q){closeScanner();showToast('Scanner unavailable on this browser','error');return;}
-  Q.init({
-    inputStream:{name:'Live',type:'LiveStream',
-      target:document.getElementById('scannerBox'),
-      constraints:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}
-    },
-    decoder:{readers:['code_128_reader','code_39_reader','ean_reader','ean_8_reader','upc_reader','upc_e_reader','codabar_reader','i2of5_reader']},
-    locate:true
-  },function(err){
-    if(err){closeScanner();showToast('Camera access denied or unavailable','error');return;}
-    Q.start();
-    Q.onDetected(function(result){
-      const code=result&&result.codeResult&&result.codeResult.code;
-      if(code)injectSerial(code);
-    });
-  });
-  const origClose=closeScanner;
-  window.closeScanner=function(){
-    try{Q.stop();}catch(e){}
-    origClose();
-    window.closeScanner=origClose;
-  };
+function loadZxingThenScan(video){
+  if(window.ZXing){startZxingScan(video);return;}
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+  s.onload=function(){startZxingScan(video);};
+  s.onerror=function(){closeScanner();showToast('Scanner unavailable — check your connection','error');};
+  document.head.appendChild(s);
+}
+
+function startZxingScan(video){
+  if(!window.ZXing){closeScanner();showToast('Scanner unavailable on this browser','error');return;}
+  const hints=new Map();
+  const ZX=window.ZXing;
+  hints.set(ZX.DecodeHintType.POSSIBLE_FORMATS,[
+    ZX.BarcodeFormat.CODE_128,
+    ZX.BarcodeFormat.CODE_39,
+    ZX.BarcodeFormat.CODE_93,
+    ZX.BarcodeFormat.EAN_13,
+    ZX.BarcodeFormat.EAN_8,
+    ZX.BarcodeFormat.UPC_A,
+    ZX.BarcodeFormat.UPC_E,
+    ZX.BarcodeFormat.ITF,
+    ZX.BarcodeFormat.CODABAR
+  ]);
+  zxingReader=new ZX.MultiFormatReader();
+  zxingReader.setHints(hints);
+  if(!scannerCanvas)scannerCanvas=document.createElement('canvas');
+  scannerTimer=setInterval(()=>detectFrameZxing(video),300);
+}
+
+function detectFrameZxing(video){
+  if(!zxingReader||video.readyState<2||video.videoWidth===0)return;
+  const w=video.videoWidth,h=video.videoHeight;
+  scannerCanvas.width=w;scannerCanvas.height=h;
+  const ctx=scannerCanvas.getContext('2d');
+  ctx.drawImage(video,0,0,w,h);
+  const imageData=ctx.getImageData(0,0,w,h);
+  const rgba=imageData.data;
+  const rgb=new Uint8ClampedArray(w*h*3);
+  for(let i=0,j=0;i<rgba.length;i+=4,j+=3){rgb[j]=rgba[i];rgb[j+1]=rgba[i+1];rgb[j+2]=rgba[i+2];}
+  try{
+    const src=new ZXing.RGBLuminanceSource(rgb,w,h);
+    const bmp=new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(src));
+    const result=zxingReader.decode(bmp);
+    if(result)injectSerial(result.getText());
+  }catch(e){/* NotFoundException is normal when no barcode visible */}
 }
 
 function closeScanner(){
@@ -714,10 +734,11 @@ function closeScanner(){
   if(scannerTimer){clearInterval(scannerTimer);scannerTimer=null;}
   if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
   video.srcObject=null;
-  video.style.display='block';
+  scannerDetector=null;
+  zxingReader=null;
 }
 
-async function detectFrame(video){
+async function detectFrameNative(video){
   if(!scannerDetector||video.readyState<2)return;
   try{
     const results=await scannerDetector.detect(video);
